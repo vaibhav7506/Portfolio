@@ -6,14 +6,34 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
   "dependencies": {
+    "@gsap/react": "^2.1.2",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
+    "@types/gsap": "^1.20.2",
+    "@types/three": "^0.185.0",
+    "@vercel/og": "^0.11.1",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.42.0",
+    "gray-matter": "^4.0.3",
+    "gsap": "^3.15.0",
+    "gsap-trial": "^3.12.7",
+    "lucide-react": "^1.21.0",
     "next": "16.2.9",
+    "next-mdx-remote": "^6.0.0",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "tailwind-merge": "^3.6.0",
+    "three": "^0.185.0"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "^1.20.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -22,6 +42,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "^4.105.0"
   }
 }

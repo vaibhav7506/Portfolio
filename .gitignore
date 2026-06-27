@@ -9,6 +9,11 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
+# cloudflare
+# cloudflare / opennext
+.open-next/
+.wrangler/
+.vercel/
 
 # testing
 /coverage
