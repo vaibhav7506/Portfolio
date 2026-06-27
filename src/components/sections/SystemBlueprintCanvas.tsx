@@ -186,57 +186,57 @@ interface ConnectionLineProps {
   scenario: ScenarioType
 }
 
+// REPLACE with:
 function ConnectionLine({ fromNode, toNode, scenario }: ConnectionLineProps) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const lineRef = useRef<any>(null)
-  const packetRef = useRef<THREE.Mesh>(null)
+  const packetRef = useRef<THREE.Mesh>(null)  // lineRef removed — was never used
 
-  const points = [
-    new THREE.Vector3(...fromNode.pos),
-    new THREE.Vector3(...toNode.pos),
-  ]
-
-  let pathColor = "rgba(77,163,255,0.18)"
-  const isPathActive = true
-
-  if (scenario === "FAILURE") {
-    if (fromNode.id === "router" && toNode.id === "research") {
-      pathColor = "#EF4444"
-    }
-  } else if (scenario === "BUDGET") {
-    if (fromNode.id === "gateway") {
-      pathColor = "#F59E0B"
-    }
-  } else if (scenario === "QUALITY") {
-    if (fromNode.id === "evaluator" && toNode.id === "planner") {
-      pathColor = "#EF4444"
-    }
+  // Determine path color based on scenario
+  let pathColor = "#4DA3FF"
+  if (scenario === "FAILURE" && fromNode.id === "router" && toNode.id === "research") {
+    pathColor = "#EF4444"
+  } else if (scenario === "BUDGET" && fromNode.id === "gateway") {
+    pathColor = "#F59E0B"
+  } else if (scenario === "QUALITY" && fromNode.id === "evaluator" && toNode.id === "planner") {
+    pathColor = "#EF4444"
   }
 
-  useFrame((state) => {
-    if (packetRef.current && isPathActive) {
-      const t = (state.clock.getElapsedTime() * 0.4 + fromNode.pos[0] * 0.2) % 1.0
-      packetRef.current.position.lerpVectors(
-        new THREE.Vector3(...fromNode.pos),
-        new THREE.Vector3(...toNode.pos),
-        t
-      )
-    }
-  })
+  // Build the Three.js Line object imperatively — avoids JSX ref typing conflict
+  // between React 19 and @react-three/fiber v9
+  const lineObject = useMemo(() => {
+    const points = [
+      new THREE.Vector3(...fromNode.pos),
+      new THREE.Vector3(...toNode.pos),
+    ]
+    const geo = new THREE.BufferGeometry().setFromPoints(points)
+    const mat = new THREE.LineBasicMaterial({
+      color: pathColor,
+      transparent: true,
+      opacity: 0.3,
+    })
+    return new THREE.Line(geo, mat)
+  }, [fromNode.pos, toNode.pos, pathColor])
 
-  const lineGeometry = new THREE.BufferGeometry().setFromPoints(points)
+  // Packet dot travels from fromNode to toNode continuously
+  useFrame((state) => {
+    if (!packetRef.current) return
+    const t = (state.clock.getElapsedTime() * 0.4 + fromNode.pos[0] * 0.2) % 1.0
+    packetRef.current.position.lerpVectors(
+      new THREE.Vector3(...fromNode.pos),
+      new THREE.Vector3(...toNode.pos),
+      t
+    )
+  })
 
   return (
     <group>
-      <line ref={lineRef} geometry={lineGeometry}>
-        <lineBasicMaterial color={pathColor} linewidth={1.5} transparent opacity={0.3} />
-      </line>
-      {isPathActive && (
-        <mesh ref={packetRef}>
-          <sphereGeometry args={[0.04, 8, 8]} />
-          <meshBasicMaterial color={pathColor === "rgba(77,163,255,0.18)" ? "#4DA3FF" : pathColor} />
-        </mesh>
-      )}
+      {/* primitive avoids the <line> JSX ref-type conflict in React 19 + R3F v9 */}
+      <primitive object={lineObject} />
+
+      {/* Animated packet dot along the connection */}
+      <mesh ref={packetRef}>
+        <sphereGeometry args={[0.04, 8, 8]} />
+        <meshBasicMaterial color={pathColor} />
+      </mesh>
     </group>
   )
 }
