@@ -109,7 +109,6 @@ const BLUEPRINT_NODES: NodeData[] = [
   },
 ]
 
-// Simple connection links
 const CONNECTIONS = [
   { from: "browser", to: "gateway" },
   { from: "pages", to: "gateway" },
@@ -122,7 +121,7 @@ const CONNECTIONS = [
   { from: "executor", to: "evaluator" },
   { from: "evaluator", to: "durable_objects" },
   { from: "durable_objects", to: "d1_kv" },
-  { from: "evaluator", to: "planner" }, // feedback retry
+  { from: "evaluator", to: "planner" },
 ]
 
 interface SceneNodeProps {
@@ -137,19 +136,17 @@ function SceneNode({ node, onHover, scenario }: SceneNodeProps) {
 
   useFrame((state) => {
     if (meshRef.current) {
-      // Gentle floating animation
       meshRef.current.position.y = node.pos[1] + Math.sin(state.clock.getElapsedTime() * 1.5 + node.pos[0]) * 0.05
     }
   })
 
-  // Adjust node color based on active scenario and state
   let nodeColor = node.color
   if (scenario === "FAILURE" && node.id === "research") {
-    nodeColor = "#EF4444" // red error
+    nodeColor = "#EF4444"
   } else if (scenario === "BUDGET" && node.id === "gateway") {
-    nodeColor = "#F59E0B" // warning limit
+    nodeColor = "#F59E0B"
   } else if (scenario === "QUALITY" && node.id === "evaluator") {
-    nodeColor = "#EF4444" // fail reject
+    nodeColor = "#EF4444"
   }
 
   return (
@@ -190,30 +187,29 @@ interface ConnectionLineProps {
 }
 
 function ConnectionLine({ fromNode, toNode, scenario }: ConnectionLineProps) {
-  const lineRef = useRef<THREE.Line>(null)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const lineRef = useRef<any>(null)
   const packetRef = useRef<THREE.Mesh>(null)
 
-  // Calculate midpoints
   const points = [
     new THREE.Vector3(...fromNode.pos),
-    new THREE.Vector3(...toNode.pos)
+    new THREE.Vector3(...toNode.pos),
   ]
 
-  // Scenario specific color
   let pathColor = "rgba(77,163,255,0.18)"
-  let isPathActive = true
+  const isPathActive = true
 
   if (scenario === "FAILURE") {
     if (fromNode.id === "router" && toNode.id === "research") {
-      pathColor = "#EF4444" // red failure path
+      pathColor = "#EF4444"
     }
   } else if (scenario === "BUDGET") {
     if (fromNode.id === "gateway") {
-      pathColor = "#F59E0B" // budget warning
+      pathColor = "#F59E0B"
     }
   } else if (scenario === "QUALITY") {
     if (fromNode.id === "evaluator" && toNode.id === "planner") {
-      pathColor = "#EF4444" // retry path active
+      pathColor = "#EF4444"
     }
   }
 
@@ -235,7 +231,6 @@ function ConnectionLine({ fromNode, toNode, scenario }: ConnectionLineProps) {
       <line ref={lineRef} geometry={lineGeometry}>
         <lineBasicMaterial color={pathColor} linewidth={1.5} transparent opacity={0.3} />
       </line>
-      {/* Animated packet dot */}
       {isPathActive && (
         <mesh ref={packetRef}>
           <sphereGeometry args={[0.04, 8, 8]} />
@@ -248,6 +243,7 @@ function ConnectionLine({ fromNode, toNode, scenario }: ConnectionLineProps) {
 
 interface SystemBlueprintCanvasProps {
   scenario: ScenarioType
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onHoverNode: (nodeData: any) => void
 }
 
@@ -274,7 +270,6 @@ export function SystemBlueprintCanvas({ scenario, onHoverNode }: SystemBlueprint
       <pointLight position={[10, 10, 10]} intensity={1.5} />
       <pointLight position={[-10, -10, -10]} intensity={0.5} />
 
-      {/* Nodes */}
       {BLUEPRINT_NODES.map((node) => (
         <SceneNode
           key={node.id}
@@ -284,12 +279,10 @@ export function SystemBlueprintCanvas({ scenario, onHoverNode }: SystemBlueprint
         />
       ))}
 
-      {/* Connection Links */}
       {CONNECTIONS.map((conn, idx) => {
         const fromNode = BLUEPRINT_NODES.find((n) => n.id === conn.from)
         const toNode = BLUEPRINT_NODES.find((n) => n.id === conn.to)
         if (!fromNode || !toNode) return null
-
         return (
           <ConnectionLine
             key={idx}
