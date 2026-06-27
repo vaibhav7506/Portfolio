@@ -9,6 +9,7 @@ interface BootSequenceProps {
 const BOOT_LOGS = [
   "LOOPOS SYSTEM BOOTING...",
   "✓ PLANNER          ONLINE",
+  "✓ RECRUITER        ONLINE",
   "✓ ROUTER           ONLINE",
   "✓ RESEARCH AGENT   ONLINE",
   "✓ EXECUTOR         ONLINE",

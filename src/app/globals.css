@@ -146,3 +146,54 @@
 .nudge-enter {
   animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+@media print {
+
+  nav,
+  canvas,
+  .noise-overlay,
+  [class*="ChatWidget"],
+  [class*="Terminal"],
+  [class*="BootSequence"],
+  [class*="SystemBlueprint"],
+  [class*="NetworkScene"] {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  .text-text {
+    color: #000 !important;
+  }
+
+  .text-text-2 {
+    color: #333 !important;
+  }
+
+  .text-text-3 {
+    color: #666 !important;
+  }
+
+  .text-accent {
+    color: #1a56db !important;
+  }
+
+  .bg-surface {
+    background: #f9f9f9 !important;
+  }
+
+  .border-border {
+    border-color: #ddd !important;
+  }
+}
+
+.project-card,
+.pillar-card,
+.about-left,
+.about-right {
+  opacity: 1 !important;
+  transform: none !important;
+}

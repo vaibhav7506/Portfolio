@@ -7,6 +7,7 @@ import { CommandPalette } from "@/components/ui/CommandPalette"
 const links = [
   { label: 'Work', href: '/#work' },
   { label: 'About', href: '/#about' },
+  { label: 'Now', href: '/now' },
   { label: 'GitHub', href: 'https://github.com/vaibhav7506', external: true },
   { label: 'Hire Me →', href: 'mailto:vs7977722@gmail.com?subject=Opportunity%20via%20Portfolio', accent: true },
 ]

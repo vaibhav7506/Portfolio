@@ -22,16 +22,24 @@ const RESPONSES: Record<string, string[]> = {
     "  ls projects         — List all projects",
     "  cat about.txt       — Who is this guy",
     "  ping vaibhav        — Check availability",
+    "  stack               — View tech stack",
+    "  salary              — You know you want to",
+    "  diagnose            — Run portfolio health check",
+    "  interview vaibhav   — Schedule an interview",
+    "  achievements        — View unlocked achievements",
+    "  secret              — ???",
     "  clear               — Clear terminal",
   ],
   "ls projects": [
     "$ ls projects/",
-    "drwxr-xr-x  LoopOS/          AI loop observability platform",
-    "drwxr-xr-x  GitBlamed/       Viral GitHub roaster, 3-provider AI",
-    "drwxr-xr-x  SentientWallet/  Autonomous DAO treasury agent",
-    "drwxr-xr-x  AutomationPlatform/ DAG workflow engine, 15 APIs",
+    "drwxr-xr-x  LoopOS/              AI loop observability platform",
+    "drwxr-xr-x  GitBlamed/           Viral GitHub roaster, 3-provider AI",
+    "drwxr-xr-x  SentientWallet/      Autonomous DAO treasury agent",
+    "drwxr-xr-x  AutomationPlatform/  DAG workflow engine, 15 APIs",
+    "drwxr-xr-x  CareerIntelligence/  LLM-powered resume scorer",
+    "drwxr-xr-x  SensorFaultDetect/   ML pipeline, XGBoost precision",
     "",
-    "4 directories, 0 toy projects",
+    "6 directories, 0 toy projects",
   ],
   "cat about.txt": [
     "$ cat about.txt",
@@ -53,10 +61,128 @@ const RESPONSES: Record<string, string[]> = {
     "",
     "→ vaibhav is ONLINE and AVAILABLE",
   ],
+  "stack": [
+    "$ cat stack.config",
+    "",
+    "PRODUCTION STACK",
+    "─────────────────────────────────",
+    "Runtime     Cloudflare Workers (0ms cold start)",
+    "Framework   Next.js 16",
+    "Language    TypeScript + Python",
+    "AI Layer    Groq → Gemini → Claude (fallback chain)",
+    "Database    Cloudflare D1 + KV",
+    "Agents      LangChain + custom orchestration",
+    "Deploy      Vercel + Cloudflare Pages",
+    "Observ.     Cloudflare AI Gateway",
+    "─────────────────────────────────",
+    "→ Built for production, not tutorials",
+  ],
+  "salary": [
+    "$ calculating market_rate --honest",
+    "",
+    "Fetching data from levels.fyi...",
+    "Cross-referencing with glassdoor...",
+    "Applying MMMUT 2026 + AI infra premium...",
+    "",
+    "RESULT: Competitive.",
+    "I build systems that don't fail silently.",
+    "That's worth a conversation.",
+    "",
+    "→ vs7977722@gmail.com",
+    "→ Response time: < 24 hours",
+  ],
+  "diagnose": [
+    "$ diagnose --full",
+    "",
+    "Running portfolio health check...",
+    "",
+    "✓ Accessibility     IMPROVED",
+    "✓ Performance       94/100",
+    "✓ Uptime            99.9%",
+    "✓ AI Chatbot        ONLINE",
+    "✓ Case Studies      4 written",
+    "✓ llm.txt           INDEXED",
+    "✓ Observability     INSTRUMENTED",
+    "⚡ LoopOS            IN DEVELOPMENT",
+    "",
+    "Overall: STRONG CANDIDATE",
+    "→ Recommend: interview immediately",
+  ],
+  "interview vaibhav": [
+    "$ schedule interview --candidate=vaibhav",
+    "",
+    "Checking calendar availability...",
+    "✓ Vaibhav is available",
+    "✓ Response time: < 24 hours",
+    "✓ Timezone: IST (flexible for global teams)",
+    "",
+    "To schedule:",
+    "→ vs7977722@gmail.com",
+    "→ Subject: Interview — [Your Company]",
+    "",
+    "Opening email...",
+  ],
+  "achievements": [
+    "$ cat achievements.log",
+    "",
+    "ACHIEVEMENTS UNLOCKED",
+    "─────────────────────────────────",
+    "[★] Built autonomous AI CFO for DAO treasury",
+    "[★] 3-provider fallback chain, 0 cold starts",
+    "[★] 340+ LeetCode problems solved",
+    "[★] Captained university football team",
+    "[★] Shipped 4 production systems before graduation",
+    "[★] Portfolio with live execution trace animation",
+    "[★] You found the terminal. Respect.",
+    "─────────────────────────────────",
+    "",
+    "Hidden achievement: try 'secret'",
+  ],
+  "secret": [
+    "$ ./secret.sh",
+    "",
+    "Decrypting...",
+    "",
+    "If you're reading this at 2AM evaluating candidates,",
+    "you deserve a great hire.",
+    "",
+    "Vaibhav built this terminal because he believes",
+    "the best engineers leave traces of curiosity",
+    "everywhere they go.",
+    "",
+    "You found one.",
+    "",
+    "→ vs7977722@gmail.com",
+    "→ Let's build something.",
+  ],
+  "whoami": [
+    "$ whoami",
+    "vaibhav",
+    "",
+    "A CS engineer who asks 'what breaks' before",
+    "'what should it do'.",
+    "",
+    "Currently: Building LoopOS",
+    "Previously: GitBlamed, SentientWallet, AutomationPlatform",
+    "Always: Thinking in systems",
+  ],
+  "ls": [
+    "$ ls",
+    "projects/   resume/   contact/   system/   secrets/",
+    "",
+    "Try: ls projects",
+  ],
+  "cat": [
+    "$ cat",
+    "Usage: cat <filename>",
+    "Example: cat about.txt",
+  ],
   "clear": [],
 }
 
 const EASTER_EGG_TRIGGER = ["sudo", "ls", "cat", "ping", "help"]
+
+const OPEN_EMAIL_COMMANDS = ["sudo hire vaibhav", "interview vaibhav", "salary"]
 
 export function EasterEggTerminal() {
   const [open, setOpen] = useState(false)
@@ -70,13 +196,10 @@ export function EasterEggTerminal() {
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const typingRef = useRef<NodeJS.Timeout[]>([])
-
-  // Detect trigger words while typing anywhere on page
   const bufferRef = useRef("")
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      // Don't hijack input fields
       const tag = (e.target as HTMLElement).tagName
       if (tag === "INPUT" || tag === "TEXTAREA") return
 
@@ -103,7 +226,7 @@ export function EasterEggTerminal() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [lines])
 
-  const typeLines = (outputLines: string[], isSuccess: boolean) => {
+  const typeLines = (outputLines: string[], isSuccess: boolean, triggerEmail?: boolean) => {
     typingRef.current.forEach(clearTimeout)
     typingRef.current = []
 
@@ -113,7 +236,14 @@ export function EasterEggTerminal() {
           ...prev,
           {
             text: line,
-            type: isSuccess && (line.includes("GRANTED") || line.includes("scheduled"))
+            type: isSuccess && (
+              line.includes("GRANTED") ||
+              line.includes("scheduled") ||
+              line.includes("STRONG") ||
+              line.includes("ONLINE") ||
+              line.includes("★") ||
+              line.includes("✓")
+            )
               ? "success"
               : line.startsWith("→")
               ? "success"
@@ -123,6 +253,19 @@ export function EasterEggTerminal() {
       }, i * 80)
       typingRef.current.push(t)
     })
+
+    // Open Gmail after typing completes for relevant commands
+    if (triggerEmail) {
+      const totalDelay = outputLines.length * 80 + 400
+      const t = setTimeout(() => {
+        const a = document.createElement("a")
+        a.href = "https://mail.google.com/mail/?view=cm&to=vs7977722@gmail.com&subject=Opportunity%20via%20Portfolio&body=Hi%20Vaibhav%2C"
+        a.target = "_blank"
+        a.rel = "noopener noreferrer"
+        a.click()
+      }, totalDelay)
+      typingRef.current.push(t)
+    }
   }
 
   const handleSubmit = () => {
@@ -140,8 +283,10 @@ export function EasterEggTerminal() {
     }
 
     const response = RESPONSES[cmd]
+    const triggerEmail = OPEN_EMAIL_COMMANDS.includes(cmd)
+
     if (response) {
-      typeLines(response.slice(1), cmd === "sudo hire vaibhav")
+      typeLines(response.slice(1), ["sudo hire vaibhav", "diagnose", "achievements", "ping vaibhav", "interview vaibhav"].includes(cmd), triggerEmail)
     } else {
       typeLines([`Command not found: ${cmd}`, "Type 'help' for available commands."], false)
     }
@@ -197,6 +342,8 @@ export function EasterEggTerminal() {
                 ? "text-text-mono"
                 : line.type === "success"
                 ? "text-success font-bold"
+                : line.type === "error"
+                ? "text-error"
                 : "text-text-2"
             }
           >

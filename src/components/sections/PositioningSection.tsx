@@ -1,6 +1,10 @@
 "use client"
 
-import React, { MouseEvent, useRef } from "react"
+import React, { MouseEvent, useRef, useEffect } from "react"
+import gsap from "gsap"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
+
+gsap.registerPlugin(ScrollTrigger)
 
 interface PillarCardProps {
   title: string
@@ -24,7 +28,7 @@ function PillarCard({ title, description, index }: PillarCardProps) {
     <div
       ref={cardRef}
       onMouseMove={handleMouseMove}
-      className="group relative flex flex-col justify-between p-8 border border-border bg-surface rounded-lg overflow-hidden transition-colors duration-300 hover:border-accent/30"
+      className="pillar-card group relative flex flex-col justify-between p-8 border border-border bg-surface rounded-lg overflow-hidden transition-colors duration-300 hover:border-accent/30"
       style={
         {
           "--mouse-x": "0px",
@@ -69,6 +73,43 @@ function PillarCard({ title, description, index }: PillarCardProps) {
 }
 
 export function PositioningSection() {
+  const sectionRef = useRef<HTMLElement>(null)
+  const headingRef = useRef<HTMLDivElement>(null)
+  const pillarsRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Heading slides up on scroll
+      gsap.from(headingRef.current, {
+        y: 40,
+        opacity: 0,
+        duration: 0.8,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: headingRef.current,
+          start: "top 85%",
+          toggleActions: "play none none none",
+        },
+      })
+
+      // Pillar cards stagger in one by one
+      gsap.from(".pillar-card", {
+        y: 50,
+        opacity: 0,
+        duration: 0.7,
+        stagger: 0.15,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: pillarsRef.current,
+          start: "top 80%",
+          toggleActions: "play none none none",
+        },
+      })
+    }, sectionRef)
+
+    return () => ctx.revert()
+  }, [])
+
   const pillars = [
     {
       title: "AGENT ARCHITECTURE",
@@ -84,10 +125,10 @@ export function PositioningSection() {
     },
   ]
 
-  return (
-    <section className="w-full max-w-7xl mx-auto px-6 py-16 md:py-24 border-t border-border/50">
+ return (
+    <section ref={sectionRef} className="w-full max-w-7xl mx-auto px-6 py-16 md:py-24 border-t border-border/50">
       {/* Eyebrow and Header */}
-      <div className="max-w-2xl flex flex-col space-y-4 mb-16">
+        <div ref={headingRef} className="max-w-2xl flex flex-col space-y-4 mb-16">
         <span className="font-mono text-xs font-bold text-accent tracking-widest uppercase">
           SPECIALIZATION
         </span>
@@ -100,7 +141,7 @@ export function PositioningSection() {
       </div>
 
       {/* Pillars Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div ref={pillarsRef} className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {pillars.map((pillar, idx) => (
           <PillarCard
             key={pillar.title}

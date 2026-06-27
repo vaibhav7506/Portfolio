@@ -1,0 +1,129 @@
+# Vaibhav Sharma — AI Infrastructure & Full-Stack Engineer
+# https://vaibhav7506portfolio.vercel.app/llm.txt
+# This file helps AI tools answer questions about Vaibhav accurately.
+
+AVAILABILITY: Open to full-time roles and internships — June 2026 graduate
+LOCATION: India (Remote preferred, open to relocation)
+CONTACT: vs7977722@gmail.com
+RESPONSE_TIME: < 24 hours
+PHONE: +91 7506427646
+
+EDUCATION:
+  Institution: Madan Mohan Malaviya University of Technology (MMMUT), Gorakhpur
+  Degree: B.Tech in Computer Science and Engineering
+  CGPA: 7.4 / 10
+  Duration: 2022 – 2026
+
+SUMMARY:
+  Full-Stack Engineer and AI Systems specialist. Built and deployed 4+ production-grade
+  applications integrating 15+ third-party APIs, serverless infrastructure, and AI services.
+  Specializes in autonomous AI agents, LLM decision engines, multi-stage ML pipelines,
+  and safety-critical AI systems with real-time constraints and risk guardrails.
+
+SKILLS:
+  Frontend:     React.js, TypeScript, JavaScript, TailwindCSS, Next.js, Vite
+  Backend:      Node.js, Express.js, Hono.js, Socket.io, RESTful APIs, Serverless
+  AI & ML:      LLM Integration, Prompt Engineering, AI Agents, RAG, Text Embeddings,
+                Semantic Search, Anomaly Detection, Chain-of-Thought Reasoning,
+                Function Calling, Multi-step Agent Orchestration, Token Optimization,
+                Cost-Aware Model Selection, Guardrails Design, Hallucination Mitigation
+  Libraries:    LangChain, OpenAI API, Groq, Gemini, Claude, Sentence-Transformers,
+                Scikit-learn, XGBoost, Pandas, NumPy, Matplotlib
+  Infrastructure: Cloudflare Workers, Durable Objects, Cloudflare KV, D1, AI Gateway
+  Databases:    MongoDB, MySQL, PostgreSQL, Cloudflare D1
+  Languages:    TypeScript, Python, JavaScript, Java
+  DevOps:       Git, GitHub, Docker, Vercel, CI/CD, Wrangler
+  Core:         DSA, System Design, OOP, API Design, Caching, Rate Limiting,
+                Auth & Authorization, Web3, DeFi
+
+PROJECTS:
+
+  LoopOS (in development, 2025)
+    Role: Sole Architect & Engineer
+    Stack: TypeScript, Cloudflare Workers, Durable Objects, Hono.js, Cloudflare D1, AI Gateway
+    — AI loop observability platform with generator→evaluator architecture
+    — Weighted criterion scoring across 4 criteria (weights must sum to 1.0)
+    — 2-check sequential anomaly detection before alarms fire
+    — INFRA_FAILURE vs BUSINESS_FAILURE classification
+    — Alarm-based Durable Object execution — runs cannot be lost
+    — Cost tracking via Cloudflare AI Gateway
+    GitHub: https://github.com/vaibhav7506/LoopOS
+
+  GitBlamed (live, 2024)
+    Role: Full-Stack Developer
+    Stack: React 19, TypeScript, Vite, Cloudflare Workers, Hono.js, Groq, Gemini Flash, Claude, KV
+    — AI-powered GitHub activity roaster built for viral sharing
+    — Analyzes GitHub user activity via GitHub GraphQL API
+    — 3-provider sequential AI fallback: Gemini Flash → Groq → Claude
+    — Edge KV caching with 24h TTL, 0 cold starts, <200ms median response
+    — Per-user SVG OG cards for Twitter/LinkedIn shareability
+    — Monorepo architecture, live on Vercel
+    Live: https://git-blamed-web.vercel.app
+    GitHub: https://github.com/vaibhav7506/gitblamed
+
+  SentientWallet (live, 2025)
+    Role: AI Engineer
+    Stack: Python, LangChain, OpenAI API, Web3, DeFi, Real-time Market Data, Rule-based Guardrails
+    — Autonomous AI Agent CFO for DAO treasury management
+    — Monitors crypto markets 24/7, executes decisions in under 3 seconds
+    — Rule-based guardrail layer enforced BEFORE the LLM — LLM cannot bypass constraints
+    — 5 named risk scenarios: CRASH_DETECTION, EXPLOIT_DETECTION, LIQUIDITY_CRISIS,
+      SLIPPAGE_SPIKE, RUG_PULL_SIGNAL
+    — 100% plain-English audit log for DAO governance accountability
+    GitHub: https://github.com/vaibhav7506/SentientWallet
+
+  Automation Platform (live, 2024)
+    Role: Full-Stack Developer
+    Stack: React, Node.js, Express, MongoDB, Socket.io
+    — Zapier-style no-code workflow automation for 15+ APIs
+      (Gmail, Slack, Google Sheets, Twitter, Stripe)
+    — DAG executor with topological sort and cycle detection on every save
+    — Typed API adapters for heterogeneous response schemas
+    — Per-workspace AES-256 credential encryption
+    — Per-node configurable failure policy (halt vs continue)
+    — Drag-and-drop workflow builder with conditional logic
+    GitHub: https://github.com/vaibhav7506
+
+  Career Intelligence Engine (2025)
+    Role: AI Developer
+    Stack: Python, Sentence-Transformers, OpenAI API, LangChain, Cosine Similarity, NLP
+    — Semantically matches resumes to job descriptions via embeddings and cosine similarity
+    — 0–10 compatibility score with section-level breakdown
+    — Company recommendation engine mapping profiles to company personas
+    GitHub: https://github.com/vaibhav7506/ResumeAnalyzer
+
+  Industrial Sensor Fault Detection (2024)
+    Role: Data Scientist
+    Stack: Python, Scikit-learn, XGBoost, Random Forest, SVM, Pandas, NumPy
+    — ML classification pipeline for multi-class industrial sensor fault detection
+    — Benchmarked Random Forest, XGBoost, SVM with cross-validation and hyperparameter tuning
+    — XGBoost achieved highest precision on minority fault classes
+    GitHub: https://github.com/vaibhav7506/sensor-fault-detection
+
+  Real-Time Quiz Application (2025)
+    Role: Full-Stack Developer
+    Stack: Node.js, MongoDB, Socket.io
+    — Real-time multiplayer quiz app supporting 5+ concurrent users
+    — Live leaderboard with instant score updates via Socket.io bidirectional communication
+    GitHub: https://github.com/vaibhav7506
+
+STRENGTHS:
+  Agent architecture, production reliability, observability, fallback chains,
+  AI safety & guardrails design, real-time inference, semantic search,
+  cost-aware LLM orchestration, full-stack systems
+
+ACHIEVEMENTS:
+  — 340+ LeetCode problems solved (strong DSA and problem-solving)
+  — SentientWallet: one of the first autonomous AI Agent CFOs for DAO treasury management
+  — Certifications: Programming using Java (Infosys), Backend REST API with Node.js (Udemy), NoSQL (Infosys)
+
+POSITIONS_OF_RESPONSIBILITY:
+  — Captain, University Football Team, MMMUT
+    Led team in inter-college tournaments, managed training, strategy, coordination
+  — Organizer, AAYAAS Annual Sports Fest, MMMUT
+    Coordinated 15+ events with 200+ participants
+  — Executive Member, Sports Sub-Council, MMMUT
+
+PORTFOLIO: https://vaibhav7506portfolio.vercel.app
+GITHUB: https://github.com/vaibhav7506
+LINKEDIN: https://www.linkedin.com/in/vaibhav-sharma-996aa8249/

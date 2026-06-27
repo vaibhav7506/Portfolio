@@ -1,16 +1,61 @@
 "use client"
 
+import { useEffect, useRef } from "react"
+import gsap from "gsap"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { projects } from "@/lib/projects"
 import { ProjectCard } from "../projects/ProjectCard"
 
+gsap.registerPlugin(ScrollTrigger)
+ScrollTrigger.config({ ignoreMobileResize: true })
 export function ProjectsSection() {
+  
+ 
+  const sectionRef = useRef<HTMLElement>(null)
+  const headingRef = useRef<HTMLDivElement>(null)
+
+//   useEffect(() => {
+//      if (window.innerWidth < 768) return
+//   const ctx = gsap.context(() => {
+//     gsap.from(headingRef.current, {
+//       y: 40,
+//       opacity: 0,
+//       duration: 0.8,
+//       ease: "power3.out",
+//       scrollTrigger: {
+//         trigger: headingRef.current,
+//         start: "top 80%",
+//         toggleActions: "play none none none",
+//       },
+//     })
+
+//     const cards = document.querySelectorAll(".project-card")
+//     if (cards.length > 0) {
+//       gsap.from(cards, {
+//         y: 60,
+//         opacity: 0,
+//         duration: 0.7,
+//         stagger: 0.12,
+//         ease: "power3.out",
+//         scrollTrigger: {
+         
+//           start: "top 80%",
+//           toggleActions: "play none reset none",
+//         },
+//       })
+//     }
+//   }, sectionRef)
+
+//   return () => ctx.revert()
+// }, [])
+
   const featuredProjects = projects.filter((p) => p.featured)
   const remainingProjects = projects.filter((p) => !p.featured)
 
   return (
-    <section id="work" className="w-full max-w-7xl mx-auto px-6 py-16 md:py-24 border-t border-border/50 scroll-mt-[56px]">
+   <section ref={sectionRef} id="work" className="w-full max-w-7xl mx-auto px-6 py-16 md:py-24 border-t border-border/50 scroll-mt-[56px]">
       {/* Header */}
-      <div className="flex flex-col space-y-3 mb-12">
+      <div ref={headingRef} className="flex flex-col space-y-3 mb-12">
         <span className="font-mono text-xs font-bold text-accent tracking-widest uppercase">
           PROJECTS
         </span>

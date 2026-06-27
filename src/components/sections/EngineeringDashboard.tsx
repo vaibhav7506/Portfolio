@@ -161,7 +161,7 @@ export function EngineeringDashboard() {
           <div className="flex-grow space-y-3.5 mb-6 min-h-[220px]">
             {commits.map((c, idx) => (
               <div
-                key={idx}
+                  key={`${c.repo}-${c.time}-${idx}`}
                 className="flex items-start gap-3 border-l border-border/30 pl-3 py-0.5 hover:border-accent/40 transition-colors duration-150"
               >
                 <div className="flex flex-col space-y-0.5 flex-grow">

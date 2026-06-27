@@ -1,11 +1,14 @@
 "use client"
 
+
 export function AboutSection() {
+  
+  
   return (
-    <section id="about" className="w-full max-w-7xl mx-auto px-6 py-16 md:py-24 border-t border-border/50 scroll-mt-[56px]">
+   <section  id="about" className="w-full max-w-7xl mx-auto px-6 py-16 md:py-24 border-t border-border/50 scroll-mt-[56px]">
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-12 items-center">
         {/* Left: Narrative Copy */}
-        <div className="space-y-6">
+       <div className="about-left space-y-6">
           <span className="font-mono text-xs font-bold text-accent tracking-widest uppercase">
             ABOUT ME
           </span>
@@ -33,7 +36,7 @@ export function AboutSection() {
         </div>
 
         {/* Right: System Status Terminal Panel */}
-        <div className="border border-border bg-surface p-6 rounded-lg font-mono text-xs shadow-panel space-y-4 relative overflow-hidden">
+       <div className="about-right border border-border bg-surface p-6 rounded-lg font-mono text-xs shadow-panel space-y-4 relative overflow-hidden">
           <div className="flex items-center justify-between border-b border-border/50 pb-3 mb-2">
             <span className="text-[10px] text-text-3 font-semibold uppercase tracking-wider">
               System Diagnostics

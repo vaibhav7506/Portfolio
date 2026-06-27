@@ -33,12 +33,19 @@ export function CommandPalette() {
       action: () => { document.getElementById("about")?.scrollIntoView({ behavior: "smooth" }); setOpen(false) },
       shortcut: "A",
     },
-    {
-      id: "contact",
-      label: "Send Email",
-      category: "NAVIGATE",
-      action: () => { window.location.href = "mailto:vs7977722@gmail.com?subject=Opportunity%20via%20Portfolio"; setOpen(false) },
-    },
+  {
+  id: "contact",
+  label: "Send Email",
+  category: "NAVIGATE",
+  action: () => {
+    const a = document.createElement("a")
+    a.href = "https://mail.google.com/mail/?view=cm&to=vs7977722@gmail.com&subject=Opportunity%20via%20Portfolio&body=Hi%20Vaibhav%2C"
+    a.target = "_blank"
+    a.rel = "noopener noreferrer"
+    a.click()
+    setOpen(false)
+  },
+},
     {
       id: "github",
       label: "Open GitHub",

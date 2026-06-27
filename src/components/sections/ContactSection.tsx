@@ -65,6 +65,14 @@ export function ContactSection() {
           >
             LINKEDIN ↗
           </a>
+          <a
+            href="https://leetcode.com/u/vaibhav7506/" // Placeholder Link, standard format
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-accent transition-colors duration-150"
+          >
+            LEETCODE ↗
+          </a>
         </div>
       </div>
 

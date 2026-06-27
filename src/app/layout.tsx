@@ -7,7 +7,7 @@ import { Navbar } from '@/components/ui/Navbar'
 import { CommandPalette } from '@/components/ui/CommandPalette'
 import { DebugOverlay } from '@/components/ui/DebugOverlay'
 import { ScrollProgress } from '@/components/ui/ScrollProgress'
-
+import { ChatWidget } from '@/components/ui/ChatWidget'
 const fontSans = Inter({
   subsets: ['latin'],
   variable: '--font-sans',
@@ -66,6 +66,7 @@ export default function RootLayout({
           className="flex-grow pt-[82px] relative z-10"
         >
           {children}
+           <ChatWidget /> 
         </main>
       </body>
     </html>
