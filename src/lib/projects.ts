@@ -34,13 +34,16 @@ export const projects: Project[] = [
     tagline: 'The Operating System for Self-Improving AI Systems',
     description: 'A loop observability platform with generator→evaluator architecture, weighted criterion scoring, 2-check anomaly detection, and alarm-based Durable Object execution.',
     role: 'Sole Architect & Engineer',
-    status: 'in-development',
+    status: 'live',
     year: 2025,
     featured: true,
     order: 1,
     tags: ['Observability', 'AI Infrastructure', 'Autonomous Agents'],
     techStack: ['TypeScript', 'Cloudflare Workers', 'Durable Objects', 'Cloudflare AI Gateway', 'Hono.js', 'Cloudflare D1'],
-    links: { github: 'https://github.com/vaibhav7506/LoopOS' },
+    links: {
+      live: 'https://loopos-web.pages.dev/ ',
+       github: 'https://github.com/vaibhav7506/LoopOS'
+       },
     media: { thumbnail: '/projects/loopos-thumb.png', hero: '/projects/loopos-hero.png' },
     metrics: [
       { label: 'Architecture',         value: 'Generator → Evaluator Loop' },
@@ -115,7 +118,10 @@ export const projects: Project[] = [
     order: 4,
     tags: ['Full-Stack', 'Workflow Engine', 'API Architecture'],
     techStack: ['React', 'Node.js', 'Express', 'MongoDB', 'Socket.io'],
-    links: { github: 'https://github.com/vaibhav7506' },
+    links: { 
+      live  :  'https://zapier-project.vercel.app/',
+      github: 'https://github.com/vaibhav7506'
+     },
     media: { thumbnail: '/projects/automation-thumb.png', hero: '/projects/automation-hero.png' },
     metrics: [
       { label: 'Integrations',      value: '15+ APIs (Gmail, Slack, Stripe...)' },
