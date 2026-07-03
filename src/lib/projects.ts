@@ -53,7 +53,48 @@ export const projects: Project[] = [
     ],
   },
 
-  // ─── PROJECT 2: GitBlamed ────────────────────────────────────────
+  // ─── PROJECT 2: CodeShift AI ─────────────────────────────────────
+{
+  slug: 'codeshift-ai',
+  title: 'CodeShift AI',
+  tagline: 'Review-first JavaScript-to-TypeScript migration workspace',
+  description:
+    'A developer tool that analyzes legacy JavaScript repositories, generates scoped TypeScript migration plans, applies conservative refactors through a local CLI, runs validation, and opens GitHub pull requests only after explicit human approval.',
+  role: 'Sole Architect & Engineer',
+  status: 'live',
+  year: 2026,
+  featured: true,
+  order: 2,
+  tags: ['Developer Tools', 'Code Migration', 'AI Engineering'],
+  techStack: [
+    'Next.js',
+    'React',
+    'TypeScript',
+    'TailwindCSS',
+    'Node.js',
+    'npm Workspaces',
+    'GitHub API',
+    'OpenAI BYOK',
+    'Vercel',
+  ],
+  links: {
+    live: 'https://codeshiftweb.vercel.app/',
+    github: 'https://github.com/vaibhav7506/codeshift-ai',
+  },
+  media: {
+    thumbnail: '/projects/codeshift-ai-thumb.png',
+    hero: '/projects/codeshift-ai-hero.png',
+  },
+  metrics: [
+    { label: 'Migration Flow', value: 'Analyze → Plan → Patch → Validate → PR' },
+    { label: 'Safety Model', value: 'Human approval before every Git mutation' },
+    { label: 'Execution Mode', value: 'Local CLI, no unsafe server-side code execution' },
+    { label: 'Validation', value: 'Tests, lint, typecheck, build gates' },
+    { label: 'Demo Proof', value: 'Reviewable GitHub PR generated end-to-end' },
+  ],
+},
+
+  // ─── PROJECT 3: GitBlamed ────────────────────────────────────────
   {
     slug: 'gitblamed',
     title: 'GitBlamed',
@@ -82,7 +123,7 @@ export const projects: Project[] = [
     ],
   },
 
-  // ─── PROJECT 3: SentientWallet ───────────────────────────────────
+  // ─── PROJECT 4: SentientWallet ───────────────────────────────────
   {
     slug: 'sentientwallet',
     title: 'SentientWallet',
@@ -105,7 +146,7 @@ export const projects: Project[] = [
     ],
   },
 
-  // ─── PROJECT 4: Automation Platform ─────────────────────────────
+  // ─── PROJECT 5: Automation Platform ─────────────────────────────
   {
     slug: 'automation-platform',
     title: 'Automation Platform',
