@@ -9,6 +9,7 @@ interface PageProps {
 export function generateStaticParams() {
   return [
     { slug: "loopos" },
+    { slug: "codeshift-ai" },
     { slug: "gitblamed" },
     { slug: "sentientwallet" },
     { slug: "automation-platform" },
@@ -53,6 +54,62 @@ const CASE_STUDY_CONTENT: Record<
       }
     ],
     rebuild: "Evaluator weight schema is validated at runtime, not at definition time. Bad weights fail silently on the first run. I'd move validation to the migration layer — the database refuses invalid configurations entirely."
+  }, 
+   "codeshift-ai": {
+    centralAngle: "How do you let AI migrate code without trusting it blindly?",
+    problem:
+      "Most AI coding tools try to rewrite too much at once. That creates a trust problem: developers get a large diff, unclear reasoning, no validation path, and no confidence that the changes are safe. CodeShift AI was built around the opposite principle — review first, automation second. It analyzes a repository, recommends a small migration scope, creates a deterministic JavaScript-to-TypeScript plan, applies conservative local transforms, runs validation, and opens a pull request only after explicit human approval.",
+
+    decisions: [
+      {
+        title: "Key Decision 1 — CLI-first execution instead of web-based code execution",
+        options:
+          "Run migrations directly on the hosted web server, use a remote sandbox, or execute locally through a CLI.",
+        chose:
+          "Chose CLI-first execution because running unknown repositories on a hosted backend is unsafe. A package can contain malicious install scripts, long-running test commands, or filesystem/network behavior that should never execute inside the product server. The web app handles analysis and planning; the CLI performs file edits, validation, Git commits, and PR creation locally where the repository already lives.",
+        tradeoff:
+          "The web flow is not fully one-click yet. The payoff is a much safer architecture: no arbitrary repo code runs on the hosted backend."
+      },
+      {
+        title: "Key Decision 2 — Deterministic migration plan before any AI enhancement",
+        options:
+          "Let the LLM rewrite files immediately, generate a migration plan first, or rely only on codemods.",
+        chose:
+          "Chose deterministic planning first. CodeShift AI analyzes the repo, detects framework/package manager/module system, scores migration readiness, and recommends safe scopes before changing anything. This makes the migration explainable and prevents the product from feeling like a black-box AI rewrite tool.",
+        tradeoff:
+          "The first version supports a narrower JS-to-TS workflow, but the behavior is predictable and reviewable."
+      },
+      {
+        title: "Key Decision 3 — Scope-bounded migration instead of full-repo rewrite",
+        options:
+          "Migrate the entire repository, migrate one user-selected scope, or only generate suggestions.",
+        chose:
+          "Chose scope-bounded migration. The user selects a path like src/utils, and CodeShift AI only modifies files inside that scope plus tsconfig.json when needed. This keeps the diff small enough for a developer to actually review and makes the PR suitable for real-world workflows.",
+        tradeoff:
+          "Large migrations require multiple runs, but each run produces a clean, understandable pull request."
+      },
+      {
+        title: "Key Decision 4 — Human approval before every Git mutation",
+        options:
+          "Automatically commit and push after migration, ask once at the end, or require confirmation at every Git step.",
+        chose:
+          "Chose separate confirmations before branch creation, commit, push, and pull request creation. Code migration is high-impact, so automation should never silently mutate Git history or publish a branch. The PR command shows the migration target, selected scope, changed files, validation result, warnings, and proposed branch before asking for approval.",
+        tradeoff:
+          "The flow is slightly slower, but it is much safer and more trustworthy."
+      },
+      {
+        title: "Key Decision 5 — BYOK AI as an optional layer",
+        options:
+          "Bundle a paid AI key, require AI for all migrations, or make AI optional through bring-your-own-key.",
+        chose:
+          "Chose BYOK because the deterministic migrator should work without AI costs. Users can optionally provide an OpenAI key for patch explanations and PR summaries, but AI output is advisory and cannot expand the selected migration scope. This keeps the product usable, cost-controlled, and safer by default.",
+        tradeoff:
+          "The AI experience depends on the user's provider key, but the core migration flow remains independent."
+      }
+    ],
+
+    rebuild:
+      "The next version should use GitHub Actions as a safe remote execution layer. The web app could trigger a workflow inside the user's repository, let GitHub run the migration and validation, then return artifacts to the dashboard. That would preserve the current safety model while making the product feel closer to a full web workflow."
   },
   gitblamed: {
     centralAngle: "Building for virality while engineering for reliability.",
