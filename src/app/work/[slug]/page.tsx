@@ -165,6 +165,63 @@ const CASE_STUDY_CONTENT: Record<
     ],
     rebuild: "Risk thresholds are currently hardcoded. They should be governance-voted parameters per treasury — different DAOs have different risk tolerances. The architecture supports this; I just haven't built the config layer yet."
   },
+  "llmguard": {
+  centralAngle: "How do you test an LLM app’s security without overclaiming certainty?",
+
+  problem:
+    "Most students build AI apps, but very few build tools that test whether those AI apps are safe. LLMGuard was built as a defensive black-box security scanner for authorized LLM/chat endpoints. The goal was not to pretend that heuristic checks can prove security, but to create a practical audit workflow: submit an endpoint, run safe OWASP-mapped tests, detect risky response patterns, redact secrets, score the scan, and generate a report that clearly separates observed behavior from confirmed vulnerabilities.",
+
+  decisions: [
+    {
+      title: "Key Decision 1 — Black-box endpoint scanning instead of source-code analysis",
+      options:
+        "Analyze the source code, inspect model prompts directly, or test the deployed LLM endpoint as a black-box API.",
+      chose:
+        "Chose black-box endpoint scanning because most developers can easily provide an API endpoint, but may not want to upload source code, internal prompts, or infrastructure details. LLMGuard sends safe test prompts to an authorized POST endpoint and evaluates the responses for security signals like prompt injection, system prompt leakage, sensitive information disclosure, unsafe agency, improper output handling, and unbounded consumption.",
+      tradeoff:
+        "Black-box testing cannot fully verify risks like supply chain security, data poisoning, vector database weaknesses, or misinformation. The payoff is a simpler, safer, and more deployable scanner that works against real hosted endpoints."
+    },
+    {
+      title: "Key Decision 2 — Heuristic detection instead of mandatory LLM judging",
+      options:
+        "Use a paid LLM judge for every finding, rely only on static regex checks, or combine safe test cases with heuristic response analysis.",
+      chose:
+        "Chose static safe test cases plus heuristic detectors so the app works without paid AI APIs. The scanner uses deterministic checks for leakage patterns, dangerous HTML, external-action claims, excessive response length, and secret-like data. Findings include severity, status, confidence, evidence, detector rationale, and remediation advice instead of pretending every result is a confirmed vulnerability.",
+      tradeoff:
+        "Heuristics can produce false positives and false negatives. The product handles this honestly by using confidence labels, warning statuses, and manual-review messaging."
+    },
+    {
+      title: "Key Decision 3 — Concurrent scanning for Vercel free-tier compatibility",
+      options:
+        "Run test cases sequentially, move scans to a background worker, or run bounded tests concurrently inside the API route.",
+      chose:
+        "Chose bounded concurrent execution using Promise.allSettled. Sequential scans could exceed Vercel Hobby function limits because each test has a timeout. LLMGuard caps the number of tests, runs them concurrently, converts individual failures into error findings, and keeps the overall scan responsive enough for a free-tier deployment.",
+      tradeoff:
+        "This avoids long-running scan jobs, but it limits the scanner to a small, carefully selected test suite. Larger enterprise-style scans would need a queue or worker system."
+    },
+    {
+      title: "Key Decision 4 — SSRF protection before sending user-controlled requests",
+      options:
+        "Trust the user-provided endpoint, block only localhost strings, or perform URL, hostname, header, and DNS-based safety checks.",
+      chose:
+        "Chose explicit SSRF protection because the scanner accepts arbitrary endpoint URLs. LLMGuard blocks localhost, private IP ranges, link-local addresses, metadata service IPs, unsafe protocols, and dangerous forwarded headers. It also resolves hostnames before requests so the scanner is not accidentally turned into a server-side request tool against internal infrastructure.",
+      tradeoff:
+        "Some edge-case endpoints may be rejected even if they are safe, but the scanner’s security boundary is more important than accepting every possible URL."
+    },
+    {
+      title: "Key Decision 5 — Supabase persistence with local demo fallback",
+      options:
+        "Store scans only in memory, require a database from the start, or support both database persistence and local demo mode.",
+      chose:
+        "Chose Supabase persistence with a local in-memory fallback. Locally, the app can run without any external setup. In production, Supabase stores scans, findings, and consent logs so history works reliably across serverless requests. This keeps onboarding simple while still supporting a real deployed product.",
+      tradeoff:
+        "The local/demo mode is not persistent across server restarts, but the production version behaves like a real audit system once Supabase environment variables are configured."
+    }
+  ],
+
+  rebuild:
+    "The next version should add a queued scan architecture using a background worker or Vercel-compatible job system. That would allow deeper scan suites, scheduled scans, authenticated scan profiles, and optional LLM-as-judge verification without risking API route timeouts. I would also add a CI/CD mode so teams can run LLMGuard automatically before deploying changes to an AI endpoint."
+},
   "automation-platform": {
     centralAngle: "Automation workflows are graph traversal problems disguised as UI products.",
     problem: "Most Zapier-clone tutorials focus on the drag-and-drop UI. The real engineering is what happens after someone clicks \"Run\" — executing an arbitrary directed graph of API calls, handling partial failures, and normalizing 15 completely different response formats into one coherent system.",

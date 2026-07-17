@@ -145,7 +145,44 @@ export const projects: Project[] = [
       { label: 'Audit Coverage',   value: '100% actions logged in plain English' },
     ],
   },
-
+ {
+  slug: 'llmguard',
+  title: 'LLMGuard',
+  tagline: 'Black-box AI Security Scanner for LLM App Endpoints',
+  description:
+    'A defensive AI security scanner that tests authorized LLM/chat API endpoints against OWASP-mapped risks like prompt injection, system prompt leakage, sensitive data disclosure, unsafe agency, improper output handling, and unbounded consumption. Includes SSRF protection, secret redaction, concurrent scan execution, Supabase persistence, and audit-ready reports.',
+  role: 'Full Stack AI Security Engineer',
+  status: 'live',
+  year: 2026,
+  featured: true,
+  order: 1,
+  tags: ['AI Security', 'LLM Security', 'OWASP', 'Full Stack', 'Security Tooling'],
+  techStack: [
+    'Next.js',
+    'TypeScript',
+    'Supabase',
+    'Vercel',
+    'Tailwind CSS',
+    'Zod',
+    'Recharts',
+    'OWASP LLM Top 10',
+    'SSRF Protection',
+  ],
+  links: {
+    live: 'https://llmguardweb.vercel.app/',
+    github: 'https://github.com/vaibhav7506/LLMGuard',
+  },
+  media: {
+    thumbnail: '/projects/llmguard-thumb.png',
+    hero: '/projects/llmguard-hero.png',
+  },
+  metrics: [
+    { label: 'Scan Execution', value: 'Concurrent test runner with Promise.allSettled' },
+    { label: 'Security Controls', value: 'SSRF blocking, rate limiting, and consent logging' },
+    { label: 'Risk Coverage', value: '6 OWASP-mapped LLM risk categories' },
+    { label: 'Evidence Handling', value: 'Secrets redacted before display and storage' },
+  ],
+},
   // ─── PROJECT 5: Automation Platform ─────────────────────────────
   {
     slug: 'automation-platform',
