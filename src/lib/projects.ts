@@ -208,8 +208,7 @@ export const projects: Project[] = [
       { label: 'Failure Handling',  value: 'Per-node configurable policy' },
     ],
   },
-
-  {
+{
   slug: 'examforge',
   title: 'ExamForge',
   tagline: 'AI-Powered Mock Test Platform for Indian Government Exams',
