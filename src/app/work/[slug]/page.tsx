@@ -249,7 +249,121 @@ const CASE_STUDY_CONTENT: Record<
       }
     ],
     rebuild: "The execution engine is synchronous per workflow run. I'd rebuild as a job queue (BullMQ or Cloudflare Queues) for parallel run execution, automatic retries, run history with replay, and queue depth observability. The current architecture taught me exactly why this matters."
-  }
+  },
+  "examforge": {
+  centralAngle: "How do you make AI-generated exam questions trustworthy enough that a learner can rely on their score to gauge real readiness?",
+
+  problem:
+    "ExamForge is a mobile-first, no-login mock test platform for Indian government exams (SSC MTS, SSC CGL, SSC GD Constable, SSC CHSL, SSC CPO, RRB NTPC). The core risk with AI-generated questions isn't availability — Groq can generate fast — it's trust: repeated questions, ambiguous phrasing, or client-side-editable scores would make every result meaningless. The system had to generate fresh questions per attempt while keeping timing, scoring, negative marking, and history fully server-authoritative.",
+
+  decisions: [
+    {
+      title: "Key Decision 1 — Fingerprint-based deduplication instead of trusting prompt wording",
+      options:
+        "Rely on prompt instructions alone to avoid repeats, cache and reuse a fixed question bank, or generate fresh candidates and explicitly fingerprint-check them against prior history before serving.",
+      chose:
+        "Chose an explicit validation pipeline: generate candidates → validate structure → create fingerprints → check against the current test, the learner's own history, recently generated questions, and verified content → regenerate on any match. Prompt wording alone was proven unreliable at preventing repetition, so deduplication was moved into deterministic application logic.",
+      tradeoff:
+        "Adds a regeneration loop and extra Groq calls per test versus a naive single-pass generation, but it's the difference between a demo and a system learners can actually trust across repeat attempts."
+    },
+    {
+      title: "Key Decision 2 — No accounts, anonymous browser-scoped identity instead of a login system",
+      options:
+        "Require account creation to track progress, allow fully anonymous use with no persistence at all, or issue a random anonymous per-browser identifier that persists attempts, history, and rankings without registration.",
+      chose:
+        "Chose anonymous browser-scoped identifiers. Every learner gets instant practice with zero signup friction, while still retaining attempt history, weak-topic tracking, and an optional leaderboard nickname — without storing any personal data.",
+      tradeoff:
+        "Clearing browser data or switching devices creates a new anonymous learner with no cross-device recovery — an explicit, documented limitation rather than a hidden one, in exchange for removing all registration friction."
+    },
+    {
+      title: "Key Decision 3 — Server-authoritative timing, scoring, and answers instead of client-side state",
+      options:
+        "Trust the client to enforce the timer and compute scores, or keep the timer, correct answers, and scoring logic entirely server-side with only signed state sent to the client.",
+      chose:
+        "Chose full server authority: the client cannot extend the attempt window, correct options are withheld until final submission, and attempt state is cryptographically signed so it can safely recover after a refresh without exposing answers or allowing tampering.",
+      tradeoff:
+        "More server round-trips than a client-scored quiz app, but it's the only way a competitive, rank-bearing exam platform can claim its scores mean anything."
+    },
+    {
+      title: "Key Decision 4 — Fully serverless edge stack (Workers + D1 + KV + R2) instead of a traditional backend",
+      options:
+        "Run a conventional Node server with managed Postgres, or commit to Cloudflare's edge stack — Hono on Workers, D1 with Drizzle for relational data, KV for caching, R2 for document storage.",
+      chose:
+        "Chose the edge-native stack for low-latency global delivery to a mobile-first, no-login user base where fast first-attempt load matters more than complex backend infrastructure. Hono handles routing on Workers, Drizzle provides type-safe D1 access, KV caches public/read-heavy data, R2 stores documents.",
+      tradeoff:
+        "Edge tooling (Wrangler, D1 migrations, binding configuration) is younger and less forgiving than a mature server stack — this surfaced directly as config-drift bugs (stale/truncated binding IDs in wrangler.jsonc, stray bindings, a failing D1 migration) that had to be debugged separately from application logic."
+    },
+    {
+      title: "Key Decision 5 — Understanding-gated study plans instead of checkbox completion",
+      options:
+        "Mark a topic complete when a learner opens or scrolls through it, or require a passing quiz score before marking any topic complete, with spaced revision after.",
+      chose:
+        "Chose to gate completion behind a short quiz per topic — skipped topics don't count as progress, failed checks return a different question set, and completed topics resurface later through spaced revision instead of disappearing.",
+      tradeoff:
+        "Higher friction than a simple 'mark as read' UX, but it directly targets the actual problem the product exists to solve: making self-reported progress reflect real understanding."
+    }
+  ],
+
+  rebuild:
+    "The next version should add optional cross-device account linking without breaking the zero-friction anonymous default, and an automated pre-deploy check that diffs wrangler.jsonc against live Cloudflare bindings — the exact class of config drift (stale binding IDs, a failing D1 migration) that cost real debugging time in this build. I'd also strengthen the similarity checker beyond fingerprint matching to catch semantically-equivalent-but-differently-worded duplicates."
+},
+"tracepilot": {
+  centralAngle: "How do you make an AI-assisted QA tool trustworthy when the AI provider is optional, unreliable, or absent?",
+
+  problem:
+    "Most QA automation either requires a human to write test scripts by hand, or blindly trusts an LLM to generate them with no fallback. TracePilot was built as a browser QA agent that explores a real user journey, records durable evidence (steps, console errors, network failures, screenshots), and produces both a human-readable bug report and exportable Playwright regression tests — with the deterministic runner staying fully usable even when no AI provider is configured.",
+
+  decisions: [
+    {
+      title: "Key Decision 1 — Deterministic core with AI as enrichment, not a dependency",
+      options:
+        "Make AI mandatory for analysis and test generation, run a purely rule-based scanner with no AI at all, or build a deterministic runner where AI only enriches results when available.",
+      chose:
+        "Chose a deterministic-first architecture. Findings (broken flows, console errors, network failures) are captured and saved before any AI call happens. The AI gateway can plan coverage, enrich bug analysis, and generate structured Playwright files — but if AI is absent, invalid, or times out, deterministic test generation still completes and the run is still useful.",
+      tradeoff:
+        "AI-enriched reports are noticeably richer than the deterministic baseline, but the product never becomes unusable or misleading just because a provider key is missing or a request fails."
+    },
+    {
+      title: "Key Decision 2 — Provider-agnostic AI gateway instead of locking to one vendor",
+      options:
+        "Hard-code one LLM provider, let users paste raw API calls, or build a single gateway abstraction supporting multiple providers with bring-your-own-key.",
+      chose:
+        "Chose a provider-agnostic gateway supporting OpenAI, Groq, Anthropic, and Gemini through one interface. Authenticated users can connect their own encrypted API key (BYOK); the public demo report works with zero AI dependency at all. All provider-specific fetch logic is isolated so adding a new provider doesn't touch product code.",
+      tradeoff:
+        "More integration surface to maintain than a single-vendor approach, but it avoids vendor lock-in and lets users control their own AI cost and provider choice."
+    },
+    {
+      title: "Key Decision 3 — Encrypted BYOK instead of storing plaintext keys or forcing a platform key",
+      options:
+        "Store user-provided API keys in plaintext, require every user to rely on a shared platform key, or encrypt user keys with authenticated encryption and decrypt only at request time.",
+      chose:
+        "Chose AES-256-GCM encryption for BYOK credentials, with the encryption key supplied only via an environment variable, never persisted in the database. Decryption happens only in server code immediately before a provider request; raw and encrypted keys are excluded from every client response, and keys are never logged, sent to the browser runner, or included in generated tests.",
+      tradeoff:
+        "No key-recovery mechanism exists by design — losing the encryption key means saved keys are unrecoverable, which is an intentional fail-closed security posture rather than a convenience gap."
+    },
+    {
+      title: "Key Decision 4 — Explicit runner safety policy instead of an unrestricted browser agent",
+      options:
+        "Let the agent navigate and act freely across any target, or scope it to same-domain, time-bounded, step-bounded exploration with destructive-action detection.",
+      chose:
+        "Chose a tightly scoped runner: same-domain navigation only, bounded step count and runtime, and a text-based classifier that refuses controls containing destructive or transactional language (delete, checkout, purchase, transfer, etc). Targets on localhost or private IP ranges are blocked outside explicit development mode.",
+      tradeoff:
+        "This makes the agent unsuitable as a general-purpose browser automation tool or pentesting tool by design — which is the correct tradeoff, since an unscoped browser agent against arbitrary targets is a real liability, not a feature."
+    },
+    {
+      title: "Key Decision 5 — Inline execution now, worker-based execution planned",
+      options:
+        "Run Playwright inline inside a short-timeout serverless function, defer browser execution entirely until a queue system exists, or run inline for the portfolio build while documenting the production path.",
+      chose:
+        "Chose inline execution from the Node route for the current build, since Playwright launches a real Chromium process that can take tens of seconds — incompatible with short-timeout serverless functions. The README explicitly documents that a production topology should enqueue runs to an isolated worker with persisted progress instead.",
+      tradeoff:
+        "Inline execution is a known limitation, not a hidden one — the project is honest about what's a portfolio simplification versus what's production-ready, which matters more to a technical interviewer than pretending it's already fully scaled."
+    }
+  ],
+
+  rebuild:
+    "The next version should move browser execution to a queue-backed worker so runs survive longer than a single request lifecycle, add shared artifact storage for screenshots to support horizontal scaling, and extend the safety classifier beyond text pattern matching. I'd also add scheduled/recurring runs and Cypress support alongside Playwright."
+},
 }
 
 export default async function CaseStudyPage({ params }: PageProps) {
