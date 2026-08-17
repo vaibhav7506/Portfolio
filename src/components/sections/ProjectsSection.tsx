@@ -5,7 +5,6 @@ import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { projects } from "@/lib/projects"
 import { ProjectCard } from "../projects/ProjectCard"
-import { HorizontalProjectScroll } from "../projects/HorizontalProjectScroll"
 
 gsap.registerPlugin(ScrollTrigger)
 ScrollTrigger.config({ ignoreMobileResize: true })
@@ -68,9 +67,12 @@ export function ProjectsSection() {
         </p>
       </div>
 
-      {/* Featured Projects — horizontal scroll-jacked track on desktop,
-          swipeable row on mobile / reduced-motion */}
-      <HorizontalProjectScroll projects={featuredProjects} />
+      {/* Featured Projects Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {featuredProjects.map((project) => (
+          <ProjectCard key={project.slug} project={project} />
+        ))}
+      </div>
 
       {/* Remaining Projects Section */}
       {remainingProjects.length > 0 && (
@@ -90,40 +92,3 @@ export function ProjectsSection() {
     </section>
   )
 }
-
-
-
-//   useEffect(() => {
-//      if (window.innerWidth < 768) return
-//   const ctx = gsap.context(() => {
-//     gsap.from(headingRef.current, {
-//       y: 40,
-//       opacity: 0,
-//       duration: 0.8,
-//       ease: "power3.out",
-//       scrollTrigger: {
-//         trigger: headingRef.current,
-//         start: "top 80%",
-//         toggleActions: "play none none none",
-//       },
-//     })
-
-//     const cards = document.querySelectorAll(".project-card")
-//     if (cards.length > 0) {
-//       gsap.from(cards, {
-//         y: 60,
-//         opacity: 0,
-//         duration: 0.7,
-//         stagger: 0.12,
-//         ease: "power3.out",
-//         scrollTrigger: {
-         
-//           start: "top 80%",
-//           toggleActions: "play none reset none",
-//         },
-//       })
-//     }
-//   }, sectionRef)
-
-//   return () => ctx.revert()
-// }, [])
