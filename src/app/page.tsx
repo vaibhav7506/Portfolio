@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { BootSequence } from "@/components/hero/BootSequence"
 import { HeroSection } from "@/components/hero/HeroSection"
 import { ProjectsSection } from "@/components/sections/ProjectsSection"
+import { TechStackSection } from "@/components/sections/TechStackSection"
 import { PositioningSection } from "@/components/sections/PositioningSection"
 import { SystemBlueprint } from "@/components/sections/SystemBlueprint"
 import { EngineeringDashboard } from "@/components/sections/EngineeringDashboard"
@@ -36,6 +37,7 @@ export default function Home() {
       <HeroSection />
       <PositioningSection />
       <ProjectsSection />
+      <TechStackSection />
       <UnifiedArchitectureSection />
       <SystemBlueprint />
       <EngineeringDashboard />
