@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { CommandPalette } from "@/components/ui/CommandPalette"
+import { MagneticButton } from "@/components/ui/MagneticButton"
 
 const links = [
   { label: 'Work', href: '/#work' },
@@ -45,13 +46,13 @@ export function Navbar() {
         {links.map((link) => {
           if (link.accent) {
             return (
-              <a
+              <MagneticButton
                 key={link.label}
                 href={link.href}
                 className="px-3 py-1 text-xs font-mono font-semibold rounded-md border border-accent bg-accent-dim hover:bg-accent hover:text-bg transition-all duration-150"
               >
                 {link.label}
-              </a>
+              </MagneticButton>
             )
           }
           if (link.external) {
@@ -82,12 +83,13 @@ export function Navbar() {
       {/* Mobile view showing only Hire Me */}
       <div className="flex md:hidden">
         
-        <a href="https://mail.google.com/mail/?view=cm&to=vs7977722@gmail.com&subject=Opportunity%20via%20Portfolio&body=Hi%20Vaibhav%2C"
-         target="_blank"
+        <MagneticButton
+          href="https://mail.google.com/mail/?view=cm&to=vs7977722@gmail.com&subject=Opportunity%20via%20Portfolio&body=Hi%20Vaibhav%2C"
+          target="_blank"
           className="px-3 py-1 text-xs font-mono font-semibold rounded-md border border-accent bg-accent-dim hover:bg-accent hover:text-bg transition-all duration-150"
         >
           Hire Me →
-        </a>
+        </MagneticButton>
       </div>
     </nav>
   )

@@ -1,5 +1,6 @@
 "use client"
 import { AvailabilityWidget } from "@/components/ui/AvailabilityWidget"
+import { MagneticButton } from "@/components/ui/MagneticButton"
 
 export function ContactSection() {
   return (
@@ -19,30 +20,39 @@ export function ContactSection() {
 
         {/* Call to action */}
          <div className="pt-2 flex flex-col items-center gap-4">
-          <a href="https://mail.google.com/mail/?view=cm&to=vs7977722@gmail.com&subject=Opportunity%20via%20Portfolio&body=Hi%20Vaibhav%2C"
+          <MagneticButton
+            href="https://mail.google.com/mail/?view=cm&to=vs7977722@gmail.com&subject=Opportunity%20via%20Portfolio&body=Hi%20Vaibhav%2C"
             target="_blank"
+            strength={20}
+            radius={90}
             className="inline-flex items-center justify-center px-8 py-3.5 font-mono text-xs font-bold tracking-wider rounded-md bg-accent text-bg hover:bg-accent/90 hover:scale-[1.02] active:scale-[0.98] transition-all duration-150"
           >
             SEND ME AN EMAIL →
-          </a>
+          </MagneticButton>
            <div className="flex items-center gap-3 font-mono text-[11px]">
             <div>
-            <a  href="/Vaibhav_resume.pdf"
+            <MagneticButton
+              href="/Vaibhav_resume.pdf"
               target="_blank"
               rel="noopener noreferrer"
+              strength={12}
+              radius={60}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-md border border-border bg-surface hover:bg-hover hover:text-accent hover:border-accent/40 transition-all duration-150 font-bold tracking-wider"
             >
               RESUME (SWE) ↓
-            </a>
+            </MagneticButton>
             </div>
              <div>
-            <a  href="/Vaibhav_AIML_resume.pdf"
+            <MagneticButton
+              href="/Vaibhav_AIML_resume.pdf"
               target="_blank"
               rel="noopener noreferrer"
+              strength={12}
+              radius={60}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-md border border-border bg-surface hover:bg-hover hover:text-accent hover:border-accent/40 transition-all duration-150 font-bold tracking-wider"
             >
               RESUME (AI/ML) ↓
-            </a>
+            </MagneticButton>
             </div>
           </div>
         </div>
