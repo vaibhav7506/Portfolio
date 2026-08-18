@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { notFound as nextNotFound } from "next/navigation"
 import { projects } from "@/lib/projects"
+import { LoopOSSection } from "@/components/sections/LoopOSSection"
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -520,6 +521,9 @@ export default async function CaseStudyPage({ params }: PageProps) {
           </div>
         </div>
       </div>
+
+      {/* Scrollytelling deep-dive — LoopOS only */}
+      {slug === "loopos" && <LoopOSSection />}
     </article>
   )
 }

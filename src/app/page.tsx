@@ -8,7 +8,6 @@ import { TechStackSection } from "@/components/sections/TechStackSection"
 import { PositioningSection } from "@/components/sections/PositioningSection"
 import { SystemBlueprint } from "@/components/sections/SystemBlueprint"
 import { EngineeringDashboard } from "@/components/sections/EngineeringDashboard"
-import { LoopOSSection } from "@/components/sections/LoopOSSection"
 import { AboutSection } from "@/components/sections/AboutSection"
 import { ContactSection } from "@/components/sections/ContactSection"
 import { UnifiedArchitectureSection } from "@/components/sections/UnifiedArchitectureSection"
@@ -60,7 +59,6 @@ export default function Home() {
       <UnifiedArchitectureSection />
       <SystemBlueprint />
       <EngineeringDashboard />
-      <LoopOSSection />
       <AboutSection />
       <ContactSection />
       <RecruiterNudge />
