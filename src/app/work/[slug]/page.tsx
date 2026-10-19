@@ -2,19 +2,23 @@ import Link from "next/link"
 import { notFound as nextNotFound } from "next/navigation"
 import { projects } from "@/lib/projects"
 import { LoopOSSection } from "@/components/sections/LoopOSSection"
+import { HeroSection } from "@/components/hero/HeroSection"
+import { BootSequence } from "@/components/hero/BootSequence"
+import { SystemBlueprint } from "@/components/sections/SystemBlueprint"
+import { CodeShiftSection } from "@/components/sections/CodeShiftSection"
+import { LLMGuardSection } from "@/components/sections/LLMGuardSection"
+import { ProjectWalkthrough } from "@/components/sections/ProjectWalkthrough"
+import { projectWalkthroughs } from "@/components/sections/projectWalkthroughs"
+import { CaseStudySummary } from "@/components/projects/CaseStudySummary"
+import { ProjectStatusBadge } from "@/components/projects/ProjectStatusBadge"
+import { caseStudyEvidence } from "@/lib/caseStudyEvidence"
 
 interface PageProps {
   params: Promise<{ slug: string }>
 }
 
 export function generateStaticParams() {
-  return [
-    { slug: "loopos" },
-    { slug: "codeshift-ai" },
-    { slug: "gitblamed" },
-    { slug: "sentientwallet" },
-    { slug: "automation-platform" },
-  ]
+  return projects.map(({ slug }) => ({ slug }))
 }
 
 const CASE_STUDY_CONTENT: Record<
@@ -26,6 +30,37 @@ const CASE_STUDY_CONTENT: Record<
     rebuild: string
   }
 > = {
+  runbookos: {
+    centralAngle: "How do you use AI during an incident while keeping remediation under human control?",
+    problem: "An incident response tool connects untrusted signals, diagnostic evidence, model recommendations, and operational actions. Letting a model response or a successful workflow authorize remediation would collapse those boundaries. RunbookOS separates advisory analysis from the Java control plane that owns tenant access, policy, approval validity, execution state, and audit records.",
+    decisions: [
+      {
+        title: "Key Decision 1 — Java authorizes; AI recommends",
+        options: "Allow a model to choose and execute tools, rely on frontend confirmation, or enforce action policy in the backend.",
+        chose: "Spring Boot evaluates the actor's role, organization, environment, and risk classification. Reversible actions require approval, elevated actions require two distinct eligible approvers, and prohibited actions are denied. Demo Mode additionally blocks high-risk actions.",
+        tradeoff: "Responders have an explicit approval step. That friction keeps a model recommendation separate from permission to act."
+      },
+      {
+        title: "Key Decision 2 — Validate evidence references",
+        options: "Display unconstrained model prose, ask for citations in a prompt, or validate structured recommendations against the evidence supplied.",
+        chose: "The analysis validator checks summary, confidence, recommendations, and citation references. A claim without evidence must be marked as a hypothesis, and references outside the available evidence set are rejected. Demo Mode offers deterministic analysis without a paid provider.",
+        tradeoff: "Valid citations establish a traceable reference, not that a model's diagnosis is correct. Responders still need to review the evidence and proposed action."
+      },
+      {
+        title: "Key Decision 3 — Bound the n8n orchestration worker",
+        options: "Let n8n own authorization, send a generic webhook, or dispatch only named actions through a scoped signed request.",
+        chose: "Java commits execution intent and an outbox event, then dispatches to n8n with HMAC headers and a short-lived token scoped to the organization, execution, nonce, and allowed action identifiers. Retries, circuit breakers, and bulkheads wrap dispatch; callbacks are revalidated by the control plane.",
+        tradeoff: "The live path needs PostgreSQL, Redis, configured n8n workflows, and integration credentials. An outbox and retry policy do not establish an exactly-once delivery guarantee."
+      },
+      {
+        title: "Key Decision 4 — Keep denial records after rollback",
+        options: "Log failures only, write audit rows in the action transaction, or persist audit events in an independent transaction.",
+        chose: "The audit service uses a separate transaction so a rejected operation can roll back without losing its denial record. Records include organization, actor, outcome, resource, and request correlation context.",
+        tradeoff: "Audit retention, access, storage, and recovery need operational ownership. The repository demonstrates the implementation; no production traffic or response-time benchmark is claimed."
+      }
+    ],
+    rebuild: "The next iteration would verify more live integration paths beyond the demo adapters, add organization invitations and SSO, and strengthen long-term audit retention and managed deployment guidance. Those are follow-up goals rather than capabilities demonstrated by the public preview."
+  },
   loopos: {
     centralAngle: "What does observability actually mean for AI loops?",
     problem: "Autonomous AI loops fail in ways that are hard to diagnose. Was it the generator hallucinating? The evaluator misconfigured? A provider outage? A budget spike? Without structured observability, the answer is always \"something went wrong somewhere.\" LoopOS was built to make every failure classifiable, every decision traceable, and every cost visible — before those properties become an emergency.",
@@ -37,10 +72,10 @@ const CASE_STUDY_CONTENT: Record<
         tradeoff: "more configuration surface, mitigated by schema validation requiring weights to sum to 1.0 with a hard error on startup."
       },
       {
-        title: "Key Decision 2 — 2-check anomaly detection before alarm",
-        options: "alarm on first failure, alarm after N failures, or 2-check sequential confirmation.",
-        chose: "Chose 2-check because production AI systems have noisy transient failures. Alerting on every blip creates alert fatigue. 2 sequential checks balance sensitivity with specificity.",
-        tradeoff: "real failures take two cycles to surface — acceptable because false positives are worse."
+        title: "Key Decision 2 — Explicit output and cost anomaly checks",
+        options: "Semantic analysis of every iteration, or deterministic checks on output similarity and per-iteration spend.",
+        chose: "The implementation checks for near-duplicate outputs using word-set similarity and for iteration costs above twice the configured per-iteration budget share. An anomaly is recorded and the run stops.",
+        tradeoff: "These checks cover repetition and cost spikes. They do not establish semantic drift detection or a general reliability guarantee."
       },
       {
         title: "Key Decision 3 — INFRA_FAILURE vs BUSINESS_FAILURE classification",
@@ -50,11 +85,11 @@ const CASE_STUDY_CONTENT: Record<
       {
         title: "Key Decision 4 — Alarm-based Durable Object execution",
         options: "polling, webhooks, or Cloudflare Durable Object alarms.",
-        chose: "Chose alarms: native to the platform, guaranteed to fire exactly once, survive restarts. The run literally cannot be lost.",
-        tradeoff: "Cloudflare vendor lock-in — deliberate choice."
+        chose: "Use Durable Object alarms to schedule iteration work and persist run and iteration records. The executor records failures so the next step can be inspected.",
+        tradeoff: "This couples execution to Cloudflare and still requires retry and recovery handling. No exactly-once execution or loss-free operation is claimed."
       }
     ],
-    rebuild: "Evaluator weight schema is validated at runtime, not at definition time. Bad weights fail silently on the first run. I'd move validation to the migration layer — the database refuses invalid configurations entirely."
+    rebuild: "I would make rubric validation easier to inspect before a run starts, add focused tests for configuration and recovery paths, and publish reproducible execution benchmarks. These are follow-up improvements; no production load or latency target is claimed here."
   }, 
    "codeshift-ai": {
     centralAngle: "How do you let AI migrate code without trusting it blindly?",
@@ -113,58 +148,62 @@ const CASE_STUDY_CONTENT: Record<
       "The next version should use GitHub Actions as a safe remote execution layer. The web app could trigger a workflow inside the user's repository, let GitHub run the migration and validation, then return artifacts to the dashboard. That would preserve the current safety model while making the product feel closer to a full web workflow."
   },
   gitblamed: {
-    centralAngle: "Building for virality while engineering for reliability.",
-    problem: "Developer portfolios rarely demonstrate AI integration in a way that's verifiable and shareable. Most \"AI projects\" are wrappers with no proof the integration handles production pressure. GitBlamed was built to be two things: something fun to share, and something technically defensible — a multi-provider AI system with edge caching, rate limiting, and real performance constraints built for the moment it goes viral.",
+    centralAngle: "A GitHub activity app with caching and explicit provider fallback.",
+    problem: "GitBlamed turns a GitHub contribution calendar into a shareable activity summary and roast. It caches responses by username, tries configured model providers in sequence, and provides a deterministic local response when model providers are unavailable. The linked implementation supports these behaviors; this case study does not present a production latency or load benchmark.",
     decisions: [
       {
-        title: "Key Decision 1 — Cloudflare Workers over Render/Railway",
-        options: "Render and Railway have 1–3 second cold starts.",
-        chose: "Cloudflare Workers spin up at the edge in under 5ms and scale automatically. For a share-driven product, perceived latency IS the product quality."
+        title: "Key Decision 1 — Workers API with KV response caching",
+        options: "Generate a new response for every request, or reuse a cached response for the same GitHub username.",
+        chose: "The Workers API reads and writes a KV cache with a 24-hour TTL. Fresh cached responses bypass contribution fetching and model generation.",
+        tradeoff: "Caching delays activity updates until the entry expires. No measured response-time or cold-start figure is provided."
       },
       {
         title: "Key Decision 2 — Sequential fallback over parallel AI requests",
-        options: "Parallel requests would triple API cost on every call.",
-        chose: "Sequential costs 1x on the happy path (>99% of requests), 2x only when Groq is down, 3x almost never. The latency penalty of fallback (~5s) is rare enough to be acceptable. The cost savings are real and ongoing."
+        options: "Request all providers concurrently, or attempt the next provider only after an earlier attempt fails.",
+        chose: "Try configured providers in order: Groq, Gemini, then Claude. A successful response stops the cascade. If all providers fail or are absent, a deterministic local roast keeps the response available. Sequential attempts avoid sending every request to every provider.",
+        tradeoff: "Fallback adds the time spent in earlier failed attempts. The reviewed provider functions do not enforce a fixed five-second timeout."
       },
       {
         title: "Key Decision 3 — SVG over PNG for the shareable card",
-        options: "The 1MB Cloudflare Workers bundle limit made Puppeteer impossible.",
-        chose: "SVG is ~8KB, renders instantly, and works across all platforms that support Twitter cards. Delivery speed beats visual perfection for a share card."
+        options: "Render a raster image through a browser, or construct the share image as SVG markup.",
+        chose: "The share route constructs a per-user SVG from the response data without launching a browser renderer.",
+        tradeoff: "The implementation provides an SVG artifact; cross-platform preview compatibility and render speed have not been benchmarked here."
       },
       {
-        title: "Key Decision 4 — Per-user OG meta tags for Twitter virality",
+        title: "Key Decision 4 — Per-user share metadata",
         options: "Static OG image = every share looks identical.",
-        chose: "With per-user OG tags, the Twitter card shows that specific user's roast card. The card IS the share hook — it creates curiosity before the click, which drives click-through rate."
+        chose: "A username-specific page supplies social metadata and a link to the user's share image, so different handles can reference different artifacts. No click-through improvement is claimed."
       }
     ],
-    rebuild: "The AI fallback uses a hardcoded 5s timeout before triggering fallback. A 429 (rate limited) should trigger immediate fallback — waiting 5s for a known rejection is unnecessary latency. I'd distinguish timeout failures from explicit rejection failures."
+    rebuild: "Add explicit per-provider deadlines and structured failure categories. Rate limits, timeouts, and malformed provider output should remain distinguishable while preserving the deterministic local fallback."
   },
   sentientwallet: {
-    centralAngle: "How do you give an AI authority over real money without losing control?",
-    problem: "DAO treasuries are managed manually and reactively. By the time a human notices a liquidity crisis or coordinated exploit, the window to act is already closed. SentientWallet is the argument that a properly guardrailed AI agent can monitor continuously, decide faster, and act within bounds humans define in advance.",
+    centralAngle: "How do you turn market context into a reviewable treasury proposal?",
+    problem: "Treasury decisions combine wallet balances, available yields, and market conditions. SentientWallet explores a Python perception and proposal loop, with Gemini producing structured actions and application code validating them. The reviewed execution method is a simulation stub, so the case study ends at a validated proposal or WAIT action.",
     decisions: [
       {
-        title: "Key Decision 1 — Rule-based layer BEFORE the LLM, not after",
-        options: "An LLM that can hallucinate should never have unconstrained authority over financial transactions.",
-        chose: "If the rule layer says \"no swaps when slippage > 3%\", that constraint is enforced before the LLM is invoked. The LLM cannot reason its way around a hard rule. Unknown scenarios default to LOCKDOWN, not CONTINUE — safe by default."
+        title: "Key Decision 1 — Structured perception before proposal generation",
+        options: "Send a free-form request, or assemble explicit market and wallet context.",
+        chose: "Gather balances, yield opportunities, and market sentiment. The agent includes the top five yields and a timestamp in the context sent to Gemini. A structured context makes each proposal easier to inspect."
       },
       {
-        title: "Key Decision 2 — 5 explicit risk scenarios, no catch-all",
-        options: "A catch-all anomaly check.",
-        chose: "Risk scenarios: CRASH_DETECTION (asset drops > X% in Y minutes), EXPLOIT_DETECTION (abnormal outflow pattern), LIQUIDITY_CRISIS (pool depth below Z threshold), SLIPPAGE_SPIKE (swap impact exceeds tolerance), RUG_PULL_SIGNAL (rapid concentrated token sell-off). Named scenarios are auditable. 'SLIPPAGE_SPIKE at 4.2%, threshold 3.0%' is something a human can verify. 'Anomaly detected' is not. New risk types require code changes — for a financial system, that's a feature, not a bug."
+        title: "Key Decision 2 — Validate generated actions in application code",
+        options: "Trust the generated action, or check it against explicit conditions.",
+        chose: "The validator checks the protocol whitelist, changes non-WAIT actions to WAIT above 60 Gwei gas, and requires approval below 0.80 confidence.",
+        tradeoff: "The 15% swap limit appears in configuration and prompting but is not enforced by this validator. Prompt instructions alone do not provide that guarantee."
       },
       {
-        title: "Key Decision 3 — Plain-language audit log as a first-class feature",
-        options: "Structured JSON logs representing the decisions.",
-        chose: "DAO governance requires human accountability. If an agent executes a large swap at 3 AM, DAO members need to read what happened in plain English at a board meeting, not decode JSON. The explanation is required before execution — incoherent explanations flag low-confidence decisions for review."
+        title: "Key Decision 3 — Conservative fallback for invalid model output",
+        options: "Retry indefinitely, guess an action, or return an explicit held state.",
+        chose: "Parsing accepts plain or fenced JSON. A generation or parsing failure produces WAIT with zero confidence and approval required, preserving a visible boundary when the model does not return usable data."
       },
       {
-        title: "Key Decision 4 — Sub-3-second decision latency",
-        options: "Standard LLM agent pipelines.",
-        chose: "Risk detection (pure Python): ~50ms, LangChain pre-compiled chain: ~200ms, GPT-4o with confidence early-exit: ~1.5–2s, Action validation (rules): ~10ms, Web3 RPC call: ~500ms budget. Any layer exceeding its budget triggers CONSERVATIVE_DEFAULT action, not a wait. Speed achieved by accepting that some decisions are 'safest' rather than 'optimal.'"
+        title: "Key Decision 4 — Explicit simulation boundary",
+        options: "Claim a transaction from a proposal, or keep the execution status explicit.",
+        chose: "The reviewed execute_action method simulates execution with a sleep and leaves actual blockchain execution as a TODO. A successful simulation is not proof of a signed or broadcast transaction."
       }
     ],
-    rebuild: "Risk thresholds are currently hardcoded. They should be governance-voted parameters per treasury — different DAOs have different risk tolerances. The architecture supports this; I just haven't built the config layer yet."
+    rebuild: "Enforce amount and slippage constraints in deterministic validation, then implement signing and execution behind explicit approval, independent simulation, and transaction-status checks. Add tests for each rejection path before connecting real funds."
   },
   "llmguard": {
   centralAngle: "How do you test an LLM app’s security without overclaiming certainty?",
@@ -224,32 +263,33 @@ const CASE_STUDY_CONTENT: Record<
     "The next version should add a queued scan architecture using a background worker or Vercel-compatible job system. That would allow deeper scan suites, scheduled scans, authenticated scan profiles, and optional LLM-as-judge verification without risking API route timeouts. I would also add a CI/CD mode so teams can run LLMGuard automatically before deploying changes to an AI endpoint."
 },
   "automation-platform": {
-    centralAngle: "Automation workflows are graph traversal problems disguised as UI products.",
-    problem: "Most Zapier-clone tutorials focus on the drag-and-drop UI. The real engineering is what happens after someone clicks \"Run\" — executing an arbitrary directed graph of API calls, handling partial failures, and normalizing 15 completely different response formats into one coherent system.",
+    centralAngle: "How do you continue a workflow without repeating an external side effect?",
+    problem: "Webhook delivery, queue retries, and external API calls can each fail independently. The current implementation creates a durable run and outbox record at intake, dispatches ordered stages through QStash, and records each action's processing and completion state.",
     decisions: [
       {
-        title: "Key Decision 1 — Workflow state as a DAG, not a linear list",
-        options: "Linear sequences can't express parallelism.",
-        chose: "A DAG lets the executor determine what can run in parallel and what must wait. Stored as adjacency lists in MongoDB, with topological sort at execution time. Added cycle detection on every save — an invalid workflow saved is an invalid workflow that fails at 2 AM."
+        title: "Key Decision 1 — Transactional intake before queue delivery",
+        options: "Publish directly from the webhook, or persist the run and dispatch intent together.",
+        chose: "Create zapRun and zapRunOutbox in one Prisma transaction. The route publishes stage zero and deletes the outbox entry after publishing succeeds. Disabled workflows are ignored before creating a run."
       },
       {
-        title: "Key Decision 2 — Typed API Adapters for heterogeneous integrations",
-        options: "Raw JSON payloads directly returned from APIs.",
-        chose: "Gmail returns threads. Slack returns messages. Stripe returns events. Each completely different. With typed adapters, the output is always trigger.body.text regardless of source. Users build workflows without understanding each API's internal structure.",
-        tradeoff: "15 integrations = 15 adapters, each maintained separately. Worth it."
+        title: "Key Decision 2 — Signed, ordered queue stages",
+        options: "Run the whole workflow inside the webhook request, or dispatch one stage at a time.",
+        chose: "QStash publishes the run ID and stage with five configured retries. The callback verifies the signature and loads actions in sortingOrder, then continues to the next stage after completion.",
+        tradeoff: "The current executor is ordered. It does not demonstrate a parallel DAG executor."
       },
       {
-        title: "Key Decision 3 — Per-node failure policy (halt vs continue)",
-        options: "Unified error policies forcing halt.",
-        chose: "Some workflows must be atomic (failed charge → don't send fulfillment email). Others are best-effort (one of 5 Slack notifications fails → others should still send). Default is halt-on-failure (safest), with per-node 'continue on error' toggle. One behavior forced on all workflows means some workflows are always wrong."
+        title: "Key Decision 3 — Per-action claims for redelivery",
+        options: "Repeat every side effect on retry, or inspect a durable execution record first.",
+        chose: "A unique run/action-order record tracks execution. Completed actions skip the side effect, while ambiguous in-progress non-Solana actions return a manual-review error. Stage publication is tracked separately.",
+        tradeoff: "A failure between an external side effect and its completion record still needs careful reconciliation. The implementation should not be described as blanket exactly-once execution."
       },
       {
-        title: "Key Decision 4 — AES-256 credential encryption per workspace",
-        options: "Plaintext database key storage.",
-        chose: "The platform stores API keys for Gmail, Slack, Stripe — credentials granting access to real business data. Plaintext storage means a database breach exposes every connected account. Per-workspace encryption means breach exposure is isolated. Decryption only at execution time. Negligible latency overhead (AES-256 on a short string is microseconds)."
+        title: "Key Decision 4 — Service-specific adapters",
+        options: "One generic payload for every provider, or resolve each action's metadata and service call.",
+        chose: "The processor routes email, Discord, Slack, Telegram, SMS, Sheets, and Solana actions to their respective services. Solana preparation persists transaction details before delivery, while other ambiguous processing states require review."
       }
     ],
-    rebuild: "The execution engine is synchronous per workflow run. I'd rebuild as a job queue (BullMQ or Cloudflare Queues) for parallel run execution, automatic retries, run history with replay, and queue depth observability. The current architecture taught me exactly why this matters."
+    rebuild: "Add explicit outbox recovery and reconciliation tooling for interrupted external actions. Expose queue delivery, execution claims, and next-stage publication as separate events so operators can diagnose retries without guessing whether a side effect happened."
   },
   "examforge": {
   centralAngle: "How do you make AI-generated exam questions trustworthy enough that a learner can rely on their score to gauge real readiness?",
@@ -371,34 +411,28 @@ export default async function CaseStudyPage({ params }: PageProps) {
   const { slug } = await params
   const project = projects.find((p) => p.slug === slug)
   const study = CASE_STUDY_CONTENT[slug]
+  const evidence = caseStudyEvidence[slug]
 
-  if (!project || !study) {
+  if (!project || !study || !evidence) {
     nextNotFound()
   }
-
-  const isLive = project.status === "live"
 
   return (
     <article className="min-h-screen bg-bg text-text pb-20 select-text">
       {/* Dynamic Header */}
-      <div className="border-b border-border bg-surface/50 py-12 md:py-16">
-        <div className="max-w-4xl mx-auto px-6">
+      <div className="border-b border-border bg-surface/50 py-8 md:py-10">
+        <div className="max-w-6xl mx-auto px-6">
           {/* Back button */}
           <Link
             href="/"
-            className="inline-flex items-center text-xs font-mono font-bold text-text-3 hover:text-accent transition-colors duration-150 mb-6 uppercase tracking-wider"
+            className="inline-flex items-center text-xs font-mono font-bold text-text-3 hover:text-accent transition-colors duration-150 mb-4 uppercase tracking-wider"
           >
             ← Back to Mission Control
           </Link>
 
           <div className="flex flex-col space-y-4">
             <div className="flex items-center gap-3">
-              <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full border text-[10px] font-mono font-bold ${
-                isLive ? "border-success/20 bg-success/5 text-success" : "border-warning/20 bg-warning/5 text-warning"
-              }`}>
-                <span className={`w-1.5 h-1.5 rounded-full ${isLive ? "bg-success" : "bg-warning animate-pulse"}`} />
-                {project.status.toUpperCase()}
-              </span>
+              <ProjectStatusBadge status={project.status} />
               <span className="font-mono text-xs text-text-3 font-semibold">{project.year}</span>
             </div>
 
@@ -412,8 +446,20 @@ export default async function CaseStudyPage({ params }: PageProps) {
         </div>
       </div>
 
+      <CaseStudySummary project={project} evidence={evidence} />
+
+      {slug === "loopos" && (
+        <>
+          <BootSequence />
+          <HeroSection />
+        </>
+      )}
+      {slug === "codeshift-ai" && <CodeShiftSection />}
+      {slug === "llmguard" && <LLMGuardSection />}
+      {projectWalkthroughs[slug] && <ProjectWalkthrough key={slug} data={projectWalkthroughs[slug]} />}
+
       {/* Main Content Area */}
-      <div className="max-w-4xl mx-auto px-6 mt-12 grid grid-cols-1 md:grid-cols-[1fr_260px] gap-12">
+      <div id="case-study" className="max-w-4xl mx-auto px-6 mt-12 grid grid-cols-1 md:grid-cols-[1fr_260px] gap-12 scroll-mt-[100px]">
         {/* Left Column: Core writeup */}
         <div className="space-y-12">
           {/* Problem section */}
@@ -469,7 +515,7 @@ export default async function CaseStudyPage({ params }: PageProps) {
           {/* Metadata Card */}
           <div className="p-5 border border-border bg-surface rounded-lg space-y-4 font-mono text-[11px] shadow-panel">
             <div className="border-b border-border/50 pb-2 mb-2">
-              <span className="text-[10px] text-text-3 font-bold uppercase tracking-wider">PROJECT METRICS</span>
+              <span className="text-[10px] text-text-3 font-bold uppercase tracking-wider">IMPLEMENTATION DETAILS</span>
             </div>
             {project.metrics.map((metric, i) => (
               <div key={i} className="flex flex-col space-y-0.5">
@@ -506,7 +552,7 @@ export default async function CaseStudyPage({ params }: PageProps) {
                   rel="noopener noreferrer"
                   className="text-accent hover:text-accent/80 transition-colors"
                 >
-                  LIVE SYSTEM ↗
+                  OPEN LIVE DEMO ↗
                 </a>
               )}
               <a
@@ -523,7 +569,12 @@ export default async function CaseStudyPage({ params }: PageProps) {
       </div>
 
       {/* Scrollytelling deep-dive — LoopOS only */}
-      {slug === "loopos" && <LoopOSSection />}
+      {slug === "loopos" && (
+        <>
+          <LoopOSSection />
+          <SystemBlueprint />
+        </>
+      )}
     </article>
   )
 }

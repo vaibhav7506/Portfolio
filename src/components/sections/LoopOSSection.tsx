@@ -13,31 +13,31 @@ interface Step {
 const STEPS: Step[] = [
   {
     id: 1,
-    title: "1. Goal Decomposition",
-    subtitle: "Planner Layer",
-    description: "The platform receives a high-level prompt, like 'stress-test Q3 payment gateway.' The Planner breaks this down into dependency subtasks, validating parameters and checking limits.",
-    impact: "Impact: Ambiguous goals are rejected at the edge, saving up to 60% of API token budget before processing.",
+    title: "1. Define the task and rubric",
+    subtitle: "Loop Configuration",
+    description: "A loop starts with a task, evaluation criteria, weights, a target score, and execution limits. These settings establish what the generator is trying to produce and how the output will be evaluated.",
+    impact: "Scope: The rubric expresses quality priorities; it does not establish a measured token-saving percentage.",
   },
   {
     id: 2,
-    title: "2. Intelligent Routing",
-    subtitle: "Vector Matcher",
-    description: "Router evaluates matching scores of specialist agents. It measures the capability score (e.g. Research: 94%, Executor: 91%) and spins up isolates on Cloudflare Workers.",
-    impact: "Impact: Tasks route to optimal LLM contexts (e.g. Groq for speed, Gemini Flash for cache depth).",
+    title: "2. Generate a candidate",
+    subtitle: "Generator",
+    description: "The configured generator produces a candidate output for the task. Iteration records capture the output and usage context so the next evaluation can be inspected.",
+    impact: "Scope: This diagram illustrates the flow. It does not demonstrate embedding-based specialist routing or an optimal model-selection benchmark.",
   },
   {
     id: 3,
     title: "3. Quality Gate Evaluation",
     subtitle: "Weighted Scoring",
-    description: "The Evaluator runs a quality check. It scores outputs across Coherence, Accuracy, Completeness, and Safety. A strict threshold score of 7.5/10.0 must be met.",
-    impact: "Impact: Invalid data or hallucinated JSON results are automatically filtered, preventing downstream database pollution.",
+    description: "The evaluator scores the candidate against the configured criteria and combines them with their weights. The run compares the resulting score with its configured threshold.",
+    impact: "Scope: A passing evaluator score reflects the chosen rubric; it is not a guarantee that an output is correct or hallucination-free.",
   },
   {
     id: 4,
-    title: "4. Recovery & Persistence",
+    title: "4. Record the outcome and continue or stop",
     subtitle: "Durable Object Alarm",
-    description: "If score >= 7.5, Memory writes vectors to D1 database. If score < 7.5, a Durable Object alarm coordinates a retry. It logs failure type (INFRA vs BUSINESS) and re-runs the loop.",
-    impact: "Impact: Eliminates silent failures. System automatically recovers and logs plain-English audit trails.",
+    description: "Durable Object alarms coordinate iteration work, while run and iteration records preserve the outcome. Duplicate-output and cost-threshold checks can flag an anomaly and stop the affected run.",
+    impact: "Scope: The overview links to the executor and anomaly checks. No loss-free execution or production reliability guarantee is claimed.",
   },
 ]
 
@@ -89,7 +89,7 @@ export function LoopOSSection() {
           LoopOS Scrollytelling deep-dive
         </h2>
         <p className="text-sm text-text-2 max-w-2xl font-sans leading-relaxed">
-          Scroll down to trace how LoopOS observes, evaluates, and recovers from failures in real-time.
+          Scroll through an illustrated generator/evaluator workflow. This is an explanatory diagram; implementation evidence and current limitations are linked in the overview.
         </p>
       </div>
 
@@ -159,7 +159,7 @@ export function LoopOSSection() {
                   activeStep === 1 ? "fill-text" : "fill-text-3"
                 }`}
               >
-                PLANNER
+                CONFIGURE
               </text>
 
               {/* Router Node */}
@@ -185,7 +185,7 @@ export function LoopOSSection() {
                   activeStep === 2 ? "fill-text" : "fill-text-3"
                 }`}
               >
-                ROUTER
+                GENERATE
               </text>
 
               {/* Evaluator Node */}
@@ -233,7 +233,7 @@ export function LoopOSSection() {
                   activeStep === 4 ? "fill-text" : "fill-text-3"
                 }`}
               >
-                RECOVERY/MEM
+                RECORD/STOP
               </text>
 
               {/* Paths */}

@@ -1,0 +1,81 @@
+.link {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.label, .arrowWindow {
+  position: relative;
+}
+
+.arrowWindow {
+  display: inline-flex;
+  width: 18px;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.arrow {
+  display: inline-block;
+}
+
+.link::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 35%;
+  background: linear-gradient(90deg, transparent, rgba(223, 241, 255, .65), transparent);
+  transform: translateX(-140%) skewX(-20deg);
+  pointer-events: none;
+}
+
+.link::after {
+  content: "";
+  position: absolute;
+  bottom: 3px;
+  left: 12px;
+  right: 12px;
+  height: 2px;
+  background: rgba(10, 13, 18, .4);
+  transform: scaleX(0);
+  transform-origin: left;
+  pointer-events: none;
+}
+
+.link[data-launching="true"]::before {
+  animation: sweep 320ms cubic-bezier(.4, 0, .2, 1) both;
+}
+
+.link[data-launching="true"]::after {
+  animation: rail 320ms cubic-bezier(.4, 0, .2, 1) both;
+}
+
+.link[data-launching="true"] .arrow {
+  animation: launch 320ms ease-in-out both;
+}
+
+@keyframes sweep {
+  to { transform: translateX(400%) skewX(-20deg); }
+}
+
+@keyframes rail {
+  0% { transform: scaleX(0); }
+  70%, 100% { transform: scaleX(1); }
+}
+
+@keyframes launch {
+  0% { transform: translateX(0); opacity: 1; }
+  48% { transform: translateX(24px); opacity: 0; }
+  49% { transform: translateX(-24px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .link[data-launching="true"]::before,
+  .link[data-launching="true"]::after,
+  .link[data-launching="true"] .arrow {
+    animation: none;
+  }
+}

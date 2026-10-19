@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect, useRef } from "react"
+import React, { useState, useEffect, useMemo } from "react"
 
 export type NodeType = "PLANNER" | "ROUTER" | "RESEARCH" | "EXECUTOR" | "EVALUATOR" | "MEMORY"
 export type NodeState = "idle" | "active" | "complete" | "error" | "warning"
@@ -83,18 +83,14 @@ interface StepInfo {
 
 interface NetworkSceneProps {
   isFailureMode: boolean
-  triggerFailure: () => void
   resetFailure: () => void
   onMetricsChange: (metrics: { latency: number; tokens: number; score: string; retries: number }) => void
-  onInspectNode: (node: NodeType | null) => void
 }
 
 export function NetworkScene({
   isFailureMode,
-  triggerFailure,
   resetFailure,
   onMetricsChange,
-  onInspectNode,
 }: NetworkSceneProps) {
   const [nodeStates, setNodeStates] = useState<Record<NodeType, NodeState>>({
     PLANNER: "idle",
@@ -117,14 +113,11 @@ export function NetworkScene({
 
   const [logs, setLogs] = useState<LogEntry[]>([])
   const [currentStep, setCurrentStep] = useState(0)
-  const [elapsedTime, setElapsedTime] = useState(0)
-  const timerRef = useRef<NodeJS.Timeout | null>(null)
-  const startTimeRef = useRef<number>(0)
 
   const [inspectedNode, setInspectedNode] = useState<NodeType | null>(null)
 
   // Stream normal run sequence
-  const NORMAL_STEPS: StepInfo[] = [
+  const NORMAL_STEPS = useMemo((): StepInfo[] => [
     {
       log: { type: "GOAL_RECEIVED", message: 'Evaluate Q3 infrastructure report', color: "text-text-mono" },
       states: { PLANNER: "active" },
@@ -227,10 +220,10 @@ export function NetworkScene({
       edges: { "ev-m": false },
       metrics: { latency: 1840, tokens: 847, score: "8.42", retries: 0 }
     }
-  ]
+  ], [])
 
   // Failure run sequence
-  const FAILURE_STEPS: StepInfo[] = [
+  const FAILURE_STEPS = useMemo((): StepInfo[] => [
     {
       log: { type: "FAILURE_INJECTED", message: "Simulating cascade provider failure", color: "text-error font-bold" },
       states: { PLANNER: "active", ROUTER: "idle", RESEARCH: "idle", EXECUTOR: "idle", EVALUATOR: "idle", MEMORY: "idle" },
@@ -315,7 +308,7 @@ export function NetworkScene({
       edges: { "ev-p": false },
       metrics: { latency: 3450, tokens: 620, score: "6.91", retries: 1 }
     }
-  ]
+  ], [])
 
   // Play steps
   useEffect(() => {
@@ -338,7 +331,7 @@ export function NetworkScene({
         setActiveEdges((prev) => {
           const next = { ...prev }
           Object.keys(next).forEach((k) => {
-            next[k] = step.edges ? !!(step.edges as any)[k] : false
+            next[k] = !!step.edges?.[k]
           })
           return next
         })
@@ -385,30 +378,7 @@ export function NetworkScene({
       }, 4500)
       return () => clearTimeout(timer)
     }
-  }, [currentStep, isFailureMode])
-
-  // Reset when toggling failure mode
-  useEffect(() => {
-    setLogs([])
-    setNodeStates({
-      PLANNER: "idle",
-      ROUTER: "idle",
-      RESEARCH: "idle",
-      EXECUTOR: "idle",
-      EVALUATOR: "idle",
-      MEMORY: "idle",
-    })
-    setActiveEdges({
-      "p-ro": false,
-      "ro-re": false,
-      "ro-ex": false,
-      "re-ev": false,
-      "ex-ev": false,
-      "ev-m": false,
-      "ev-p": false,
-    })
-    setCurrentStep(0)
-  }, [isFailureMode])
+  }, [currentStep, isFailureMode, NORMAL_STEPS, FAILURE_STEPS, onMetricsChange, resetFailure])
 
   // Style class mapper for nodes
   const getNodeClasses = (state: NodeState) => {
@@ -593,7 +563,6 @@ export function NetworkScene({
           {/* Nodes */}
           {NODES.map((node) => {
             const state = nodeStates[node.id]
-            const isInspectable = true
             const glowFilter = state === "active" ? "url(#glow-accent)" : state === "error" ? "url(#glow-error)" : undefined
 
             return (
@@ -601,13 +570,11 @@ export function NetworkScene({
                 key={node.id}
                 onClick={() => {
                   setInspectedNode(node.id)
-                  onInspectNode(node.id)
                 }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault()
                     setInspectedNode(node.id)
-                    onInspectNode(node.id)
                   }
                 }}
                 tabIndex={0}
@@ -682,7 +649,6 @@ export function NetworkScene({
               <button
                 onClick={() => {
                   setInspectedNode(null)
-                  onInspectNode(null)
                 }}
                 className="text-text-3 hover:text-text text-[9px] uppercase font-bold cursor-pointer"
               >
@@ -701,9 +667,9 @@ export function NetworkScene({
             <div className="flex items-center justify-between border-b border-border/50 pb-2 mb-2">
               <span className="text-text-3 font-semibold text-[9px] uppercase tracking-wider flex items-center gap-1.5">
                 <span className={`w-2 h-2 rounded-full ${isFailureMode ? "bg-error animate-pulse" : "bg-success animate-ping"}`} />
-                Live Execution Stream
+                Illustrative Execution Stream
               </span>
-              <span className="text-text-mono text-[9px]">loopOS v1.0.0</span>
+              <span className="text-text-mono text-[9px]">sample scenario</span>
             </div>
 
             {/* Console Log Rows */}
@@ -712,7 +678,7 @@ export function NetworkScene({
              role="log"
              aria-live="polite"
              aria-atomic="false"
-             aria-label="Live execution trace log"
+             aria-label="Illustrative execution trace log"
             >
                {logs.map((log, idx) => (
                 <div key={idx} className="flex items-start gap-3">

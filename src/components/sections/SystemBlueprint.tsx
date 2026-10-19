@@ -35,17 +35,17 @@ export function SystemBlueprint() {
   }
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-6 py-16 md:py-24 border-t border-border/50">
+    <section id="loopos-blueprint" aria-labelledby="loopos-blueprint-title" className="w-full max-w-7xl mx-auto px-6 py-16 md:py-24 border-t border-border/50 scroll-mt-[100px]">
       {/* Header */}
       <div className="flex flex-col space-y-3 mb-10">
         <span className="font-mono text-xs font-bold text-accent tracking-widest uppercase">
           SYSTEM BLUEPRINT
         </span>
-        <h2 className="text-2xl md:text-3xl font-extrabold text-text tracking-tight">
-          Interactive Distributed Architecture Blueprint
+        <h2 id="loopos-blueprint-title" className="text-2xl md:text-3xl font-extrabold text-text tracking-tight">
+          LoopOS Interactive Architecture Blueprint
         </h2>
         <p className="text-sm text-text-2 max-w-2xl font-sans leading-relaxed">
-          Recruiters check for systems engineering competence. Rotate, zoom, and inspect this live 3D representation of LoopOS infrastructure to see our architectural design decisions.
+          Rotate, zoom, and inspect this conceptual architecture sketch. Nodes, scenarios, and displayed activity are illustrative; the overview above links to implementation evidence and current limitations.
         </p>
       </div>
 
@@ -114,13 +114,13 @@ export function SystemBlueprint() {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center text-center h-[260px] text-text-3 italic p-4">
-                Hover over a 3D network node in the canvas to inspect its production engineering decisions.
+                Hover over a node to inspect its role in this illustrative architecture.
               </div>
             )}
           </div>
 
           <div className="border-t border-border/50 pt-4 mt-6 text-[9px] text-text-3 leading-relaxed uppercase">
-            System status: nominal. LoopOS is fully instrumented with telemetry vectors.
+            Implementation evidence is linked from the overview above.
           </div>
         </div>
       </div>

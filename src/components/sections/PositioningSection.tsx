@@ -61,9 +61,9 @@ function PillarCard({ title, description, index }: PillarCardProps) {
         <span className="font-mono text-xs text-text-3 font-semibold tracking-wider">
           0{index + 1}
         </span>
-        <h3 className="text-lg font-bold text-text group-hover:text-accent transition-colors duration-200">
+        <h2 className="text-lg font-bold text-text group-hover:text-accent transition-colors duration-200">
           {title}
-        </h3>
+        </h2>
         <p className="text-xs text-text-2 leading-relaxed font-sans">
           {description}
         </p>
@@ -78,6 +78,7 @@ export function PositioningSection() {
   const pillarsRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
     const ctx = gsap.context(() => {
       // Heading slides up on scroll
       gsap.from(headingRef.current, {
@@ -116,8 +117,8 @@ export function PositioningSection() {
       description: "Multi-agent orchestration with generator→evaluator loops, weighted scoring, and automated recovery paths.",
     },
     {
-      title: "PRODUCTION SYSTEMS",
-      description: "Cloudflare Workers, edge caching, rate limiting, and multi-provider AI fallback chains that stay live under pressure.",
+      title: "APPLICATION INFRASTRUCTURE",
+      description: "Cloudflare Workers request handling, edge caching, rate limiting, and sequential AI-provider fallback.",
     },
     {
       title: "OBSERVABILITY",
@@ -126,17 +127,17 @@ export function PositioningSection() {
   ]
 
  return (
-    <section ref={sectionRef} className="w-full max-w-7xl mx-auto px-6 py-16 md:py-24 border-t border-border/50">
+    <section ref={sectionRef} aria-labelledby="specialization-heading" className="w-full max-w-7xl mx-auto px-6 py-12 md:py-20 lg:py-24 min-h-[calc(100svh-82px)] flex flex-col justify-center">
       {/* Eyebrow and Header */}
-        <div ref={headingRef} className="max-w-2xl flex flex-col space-y-4 mb-16">
+        <div ref={headingRef} className="max-w-3xl flex flex-col space-y-4 mb-12 md:mb-16">
         <span className="font-mono text-xs font-bold text-accent tracking-widest uppercase">
           SPECIALIZATION
         </span>
-        <h2 className="text-2xl md:text-3xl font-extrabold text-text tracking-tight leading-tight">
+        <h1 id="specialization-heading" className="text-3xl md:text-5xl font-extrabold text-text tracking-tight leading-tight">
           AI systems that don&apos;t just run — they recover.
-        </h2>
+        </h1>
         <p className="text-sm text-text-2 font-sans leading-relaxed">
-          Most AI systems fail silently. I build the infrastructure that detects, evaluates, and recovers from failure — automatically.
+          I build infrastructure to inspect model outputs, record failures, and support bounded recovery paths.
         </p>
       </div>
 

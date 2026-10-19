@@ -1,8 +1,9 @@
 "use client"
 
-import { useState } from "react"
-import Link from "next/link"
+import { useCallback, useState } from "react"
 import { NetworkScene } from "./NetworkScene"
+import { ExploreLoopOSLink } from "./ExploreLoopOSLink"
+import { FailureControl } from "./FailureControl"
 
 export function HeroSection() {
   const [isFailureMode, setIsFailureMode] = useState(false)
@@ -13,30 +14,19 @@ export function HeroSection() {
     retries: 0,
   })
 
-  // Track if a node is currently being inspected to show a status note in UI
-  const [inspectedNode, setInspectedNode] = useState<string | null>(null)
-
-  const handleMetricsChange = (newMetrics: typeof metrics) => {
-    setMetrics(newMetrics)
-  }
-
-  const handleInspectNode = (node: string | null) => {
-    setInspectedNode(node)
-  }
-
   const triggerFailure = () => {
     setIsFailureMode(true)
   }
 
-  const resetFailure = () => {
+  const resetFailure = useCallback(() => {
     setIsFailureMode(false)
-  }
+  }, [])
 
   const scoreNum = parseFloat(metrics.score)
   const isScorePass = scoreNum >= 7.5 || scoreNum === 0
 
   return (
-    <section className="relative w-full max-w-7xl mx-auto px-6 py-12 md:py-20 lg:py-24 grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-12 items-center min-h-[calc(100vh-56px)]">
+    <section aria-labelledby="loopos-introduction" className="relative w-full max-w-7xl mx-auto px-6 py-12 md:py-20 lg:py-24 grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-12 items-center min-h-[calc(100vh-56px)]">
       {/* Left Column (Copy + Metrics) */}
       <div className="flex flex-col space-y-8 lg:max-w-[340px]">
         {/* Availability Badge */}
@@ -52,42 +42,32 @@ export function HeroSection() {
           <p className="font-mono text-xs font-bold text-accent tracking-widest uppercase">
             FULL-STACK ENGINEER — AI AGENT SYSTEMS
           </p>
-          <h1 className="text-3xl md:text-4xl font-extrabold text-text tracking-tight leading-tight">
+          <h2 id="loopos-introduction" className="text-3xl md:text-4xl font-extrabold text-text tracking-tight leading-tight">
             Building agent infrastructure with guardrails, evaluators, and recovery loops.
-          </h1>
+          </h2>
           <p className="text-sm text-text-2 leading-relaxed font-sans">
             Built LoopOS, SentientWallet, and GitBlamed — using Cloudflare Workers, Next.js, and multi-agent architectures.
           </p>
+          <p className="text-xs text-text-3 leading-relaxed">The agent scene below is a conceptual animation with sample events and metrics, rather than a recording of the deployed LoopOS executor.</p>
         </div>
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row lg:flex-col gap-3 font-mono">
-          <Link
-            href="/work/loopos"
-            className="flex items-center justify-center px-5 py-3 text-xs font-bold rounded-md bg-accent text-bg hover:bg-accent/90 transition-all duration-150 tracking-wider text-center"
-          >
-            EXPLORE LOOPOS →
-          </Link>
-          <button
-            onClick={() => {
+          <ExploreLoopOSLink href="/work/loopos#case-study" />
+          <FailureControl isFailureMode={isFailureMode}
+            onToggle={() => {
               if (isFailureMode) {
                 resetFailure()
               } else {
                 triggerFailure()
               }
             }}
-            className={`flex items-center justify-center px-5 py-3 text-xs font-bold rounded-md border transition-all duration-150 tracking-wider text-center cursor-pointer ${
-              isFailureMode
-                ? "border-error bg-error/10 text-error hover:bg-error hover:text-text"
-                : "border-border hover:border-error/50 hover:text-error"
-            }`}
-          >
-            {isFailureMode ? "RESET RUN SEQUENCE" : "INJECT FAILURE"}
-          </button>
+          />
         </div>
 
         {/* Metrics Grid */}
-        <div className="grid grid-cols-2 gap-4 border border-border bg-surface p-4 rounded-lg shadow-inner font-mono">
+        <div aria-label="Illustrative run metrics" className="grid grid-cols-2 gap-4 border border-border bg-surface p-4 rounded-lg shadow-inner font-mono">
+          <p className="col-span-2 text-[10px] text-text-2 font-semibold uppercase tracking-wide">Illustrative run · sample metrics</p>
           {/* Latency */}
           <div className="flex flex-col">
             <span className="text-[10px] text-text-3 font-semibold uppercase tracking-wider">LATENCY</span>
@@ -133,11 +113,10 @@ export function HeroSection() {
       {/* Right Column (DAG Visualization Canvas) */}
       <div className="w-full h-full min-h-[460px] flex items-center justify-center relative">
         <NetworkScene
+          key={isFailureMode ? "failure" : "normal"}
           isFailureMode={isFailureMode}
-          triggerFailure={triggerFailure}
           resetFailure={resetFailure}
-          onMetricsChange={handleMetricsChange}
-          onInspectNode={handleInspectNode}
+          onMetricsChange={setMetrics}
         />
       </div>
     </section>
