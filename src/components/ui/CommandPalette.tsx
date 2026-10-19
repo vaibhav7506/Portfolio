@@ -2,6 +2,20 @@
 
 import { useEffect, useState, useRef, useCallback } from "react"
 import { useRouter } from "next/navigation"
+import { resumeLinks } from "@/lib/resumeLinks"
+import { projects } from "@/lib/projects"
+
+const openPaletteEvent = "portfolio:open-command-palette"
+
+export function CommandPaletteTrigger() {
+  return (
+    <button type="button" onClick={() => window.dispatchEvent(new Event(openPaletteEvent))}
+      className="flex items-center gap-2 px-3 py-1.5 rounded-md border border-border bg-surface hover:border-accent/40 transition-all duration-150 font-mono text-[10px] text-text-3 hover:text-text cursor-pointer"
+      title="Open command palette" aria-label="Open command palette" aria-haspopup="dialog">
+      <span>⌘K</span>
+    </button>
+  )
+}
 
 interface Command {
   id: string
@@ -54,40 +68,22 @@ export function CommandPalette() {
     },
     {
       id: "resume-swe",
-      label: "Download Resume (SWE)",
+      label: "View Résumé (SDE)",
       category: "FILES",
-      action: () => { window.open("/Vaibhav_resume.pdf", "_blank"); setOpen(false) },
+      action: () => { window.open(resumeLinks.sde.url, "_blank", "noopener,noreferrer"); setOpen(false) },
     },
     {
       id: "resume-aiml",
-      label: "Download Resume (AI/ML)",
+      label: "View Résumé (AI/ML)",
       category: "FILES",
-      action: () => { window.open("/Vaibhav_AIML_resume.pdf", "_blank"); setOpen(false) },
+      action: () => { window.open(resumeLinks.aiml.url, "_blank", "noopener,noreferrer"); setOpen(false) },
     },
-    {
-      id: "loopos",
-      label: "LoopOS — Case Study",
+    ...projects.map((project) => ({
+      id: project.slug,
+      label: `${project.title} — Case Study`,
       category: "PROJECTS",
-      action: () => { router.push("/work/loopos"); setOpen(false) },
-    },
-    {
-      id: "gitblamed",
-      label: "GitBlamed — Case Study",
-      category: "PROJECTS",
-      action: () => { router.push("/work/gitblamed"); setOpen(false) },
-    },
-    {
-      id: "sentientwallet",
-      label: "SentientWallet — Case Study",
-      category: "PROJECTS",
-      action: () => { router.push("/work/sentientwallet"); setOpen(false) },
-    },
-    {
-      id: "automation",
-      label: "Automation Platform — Case Study",
-      category: "PROJECTS",
-      action: () => { router.push("/work/automation-platform"); setOpen(false) },
-    },
+      action: () => { router.push(`/work/${project.slug}`); setOpen(false) },
+    })),
     {
       id: "linkedin",
       label: "Open LinkedIn",
@@ -123,12 +119,19 @@ export function CommandPalette() {
   }, [])
 
   useEffect(() => {
+    const openPalette = () => { setOpen(true); setQuery(""); setSelected(0) }
     window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
+    window.addEventListener(openPaletteEvent, openPalette)
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown)
+      window.removeEventListener(openPaletteEvent, openPalette)
+    }
   }, [handleKeyDown])
 
   useEffect(() => {
-    if (open) setTimeout(() => inputRef.current?.focus(), 50)
+    if (!open) return
+    const timer = setTimeout(() => inputRef.current?.focus(), 50)
+    return () => clearTimeout(timer)
   }, [open])
 
   const handlePaletteKeyDown = (e: React.KeyboardEvent) => {
@@ -143,15 +146,7 @@ export function CommandPalette() {
     }
   }
 
-  if (!open) return (
-    <button
-      onClick={() => { setOpen(true); setQuery(""); setSelected(0) }}
-      className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-md border border-border bg-surface hover:border-accent/40 transition-all duration-150 font-mono text-[10px] text-text-3 hover:text-text cursor-pointer"
-      title="Open command palette"
-    >
-      <span>⌘K</span>
-    </button>
-  )
+  if (!open) return null
 
   return (
     <div
@@ -163,6 +158,7 @@ export function CommandPalette() {
 
       {/* Palette */}
       <div
+        role="dialog" aria-modal="true" aria-label="Command palette"
         className="relative w-full max-w-lg bg-[#0F1318] border border-border rounded-xl shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
         onKeyDown={handlePaletteKeyDown}
