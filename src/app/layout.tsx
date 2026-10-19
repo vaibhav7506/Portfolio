@@ -21,11 +21,12 @@ const fontMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://vaibhav7506portfolio.vercel.app'),
   title: 'Vaibhav Sharma | AI Agent Infrastructure & Full-Stack Systems Engineer',
-  description: 'Vaibhav Sharma — CS engineer (MMMUT 2026). Built LoopOS, SentientWallet, and GitBlamed. AI agent infrastructure, edge computing, full-stack systems.',
+  description: 'Vaibhav Sharma — CS engineer (MMMUT 2026). Built RunbookOS, CodeShift AI, and LoopOS. Human-governed incident response, developer tools, and observable AI systems.',
   openGraph: {
     title: 'Vaibhav Sharma | AI Systems Engineer',
-    description: 'Building autonomous agent infrastructure with guardrails, evaluators, and recovery loops.',
+    description: 'Human-governed incident response, review-first code migration, and observable AI loops.',
     images: [{ url: '/api/og', width: 1200, height: 630 }],
     type: 'website',
   },

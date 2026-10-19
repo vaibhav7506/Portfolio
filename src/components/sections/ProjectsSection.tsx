@@ -63,7 +63,7 @@ export function ProjectsSection() {
           AI tools & full-stack applications
         </h2>
         <p className="text-sm text-text-2 max-w-2xl font-sans leading-relaxed">
-          Reviewable code migrations, observable AI loops, endpoint security checks, and queued workflows. Each case study includes implementation evidence, current scope, and limitations.
+          Governed incident response, reviewable code migrations, observable AI loops, endpoint security checks, and queued workflows. Each case study includes implementation evidence, current scope, and limitations.
         </p>
       </div>
 

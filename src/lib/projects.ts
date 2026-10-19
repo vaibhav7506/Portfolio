@@ -34,6 +34,31 @@ export const projectStatusLabels: Record<Project['status'], string> = {
 }
 
 export const projects: Project[] = [
+  // ─── PROJECT 1: RunbookOS ────────────────────────────────────────
+  {
+    slug: 'runbookos',
+    title: 'RunbookOS',
+    tagline: 'Human-governed AI incident response',
+    description: 'An incident-response platform that collects diagnostic evidence, validates AI recommendations, and gates runbook actions through Java policy and human approval. Spring Boot owns authorization and state; signed n8n workflows handle bounded orchestration. Demo Mode uses deterministic analysis and simulated safe actions.',
+    role: 'Full-Stack Engineer',
+    status: 'active',
+    year: 2026,
+    featured: true,
+    order: 1,
+    tags: ['Incident Response', 'AI Engineering', 'Human Approval'],
+    techStack: ['Java 21', 'Spring Boot', 'Next.js', 'TypeScript', 'PostgreSQL', 'Redis', 'n8n', 'Resilience4j', 'Docker', 'OpenTelemetry'],
+    links: {
+      live: 'https://runbookos-ten.vercel.app/',
+      github: 'https://github.com/vaibhav7506/Runbookos',
+    },
+    media: { thumbnail: '/projects/evidence/runbookos-product.png', hero: '/projects/evidence/runbookos-product.png' },
+    metrics: [
+      { label: 'Control Plane', value: 'Java policy + human approval' },
+      { label: 'Orchestration', value: 'Signed n8n dispatch' },
+      { label: 'AI Evidence', value: 'Citation validation + provider fallback' },
+      { label: 'Demo Boundary', value: 'Simulated safe actions' },
+    ],
+  },
 
   // ─── PROJECT 2: CodeShift AI ─────────────────────────────────────
 {

@@ -3,6 +3,7 @@
 import { projects } from "@/lib/projects"
 
 export function AboutSection() {
+  const currentBuild = projects.find((project) => project.status === "active") ?? projects[0]
   
   
   return (
@@ -17,7 +18,7 @@ export function AboutSection() {
             I build around failure, recovery, and review.
           </h2>
            <div className="p-4 border border-border bg-surface rounded-lg font-mono text-[10px] text-text-mono mt-6 leading-relaxed">
-              Across {projects.length} projects, I explore observable AI loops, reviewable code migrations, endpoint security checks, queued workflows, and browser QA. The case studies document what works and what still needs work.
+              Across {projects.length} projects, I explore governed incident response, observable AI loops, reviewable code migrations, endpoint security checks, queued workflows, and browser QA. The case studies document what works and what still needs work.
             </div>
             
           <div className="space-y-4 text-sm text-text-2 leading-relaxed font-sans">
@@ -78,7 +79,7 @@ export function AboutSection() {
 </div>
             <div className="flex justify-between items-center">
               <span className="text-text-3 font-semibold">CURRENT BUILD</span>
-              <span className="text-accent font-bold">LoopOS</span>
+              <span className="text-accent font-bold">{currentBuild.title}</span>
             </div>
 
           </div>
