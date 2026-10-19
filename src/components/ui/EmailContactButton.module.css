@@ -1,0 +1,40 @@
+.wrapper { display: inline-block; }
+.link { position: relative; }
+.content { display: inline-flex; align-items: center; justify-content: center; gap: 13px; vertical-align: middle; }
+.label { display: inline-grid; text-align: center; }
+.label > span { grid-area: 1 / 1; transition: opacity .18s ease, translate .18s ease; }
+.label > span[data-visible=false] { opacity: 0; translate: 0 4px; }
+.label > span[data-visible=true] { opacity: 1; translate: 0 0; }
+.scene { position: relative; display: inline-block; width: 24px; height: 24px; flex-shrink: 0; }
+.envelope, .plane { position: absolute; inset: 0; }
+.envelope { transition: opacity .18s, translate .25s; }
+.flap { transform-origin: 12px 7px; transition: transform .3s ease; }
+.letter { opacity: 0; transform: translateY(4px); transition: opacity .2s, transform .3s ease; }
+.plane { opacity: 0; }
+.trail { position: absolute; width: 22px; height: 2px; border-radius: 2px; top: 16px; left: -5px; opacity: 0; background: currentColor; transform-origin: right; rotate: -32deg; }
+.glint { position: absolute; top: -5px; right: -10px; width: 5px; height: 5px; border-radius: 50%; background: #d4eeff; opacity: 0; }
+.pulse { position: absolute; inset: -3px; border: 1px solid #7cc6ff; border-radius: inherit; opacity: 0; pointer-events: none; }
+.link:focus-visible { outline: 2px solid #badfff; outline-offset: 5px; }
+@media (hover: hover) {
+  .wrapper:not([data-opening=true]) .link:hover .flap { transform: scaleY(-.65); }
+  .wrapper:not([data-opening=true]) .link:hover .letter { opacity: 1; transform: translateY(-3px); }
+  .wrapper:not([data-opening=true]) .link:hover .envelope { translate: 0 1px; }
+}
+.wrapper:not([data-opening=true]) .link:focus-visible .flap { transform: scaleY(-.65); }
+.wrapper:not([data-opening=true]) .link:focus-visible .letter { opacity: 1; transform: translateY(-3px); }
+.wrapper[data-opening=true] .envelope { animation: foldAway .24s ease both, envelopeReturn .25s 1.05s ease forwards; }
+.wrapper[data-opening=true] .plane { animation: sendFlight .85s .12s cubic-bezier(.25,.6,.35,1) both; }
+.wrapper[data-opening=true] .trail { animation: speedTrail .6s .22s ease-out both; }
+.wrapper[data-opening=true] .glint { animation: glint .5s .4s ease-out both; }
+.wrapper[data-opening=true] .pulse { animation: sendPulse .75s ease-out both; }
+@keyframes foldAway { from { opacity: 1; transform: scale(1) rotate(0); } to { opacity: 0; transform: scale(.4) rotate(-20deg); } }
+@keyframes sendFlight { 0% { opacity: 0; transform: translate(-5px, 5px) scale(.45) rotate(12deg); } 20% { opacity: 1; transform: translate(0, 0) scale(1) rotate(0); } 45% { opacity: 1; transform: translate(-3px, 2px) scale(1) rotate(-5deg); } 85%,100% { opacity: 0; transform: translate(46px, -35px) scale(.55) rotate(-16deg); } }
+@keyframes speedTrail { 0%,20% { opacity: 0; scale: 0 1; translate: 0 0; } 45% { opacity: .6; scale: 1 1; } 100% { opacity: 0; scale: .2 1; translate: 33px -22px; } }
+@keyframes glint { 0% { opacity: 0; scale: .2; } 40% { opacity: .9; scale: 1.3; } 100% { opacity: 0; scale: 0; translate: 10px -6px; } }
+@keyframes sendPulse { 0% { opacity: .65; scale: 1; } 100% { opacity: 0; scale: 1.12 1.5; } }
+@keyframes envelopeReturn { from { opacity: 0; transform: translate(-3px, 3px) scale(.8); } to { opacity: 1; transform: translate(0, 0) scale(1); } }
+@media (prefers-reduced-motion: reduce) {
+  .content *, .pulse { animation: none !important; transition: none !important; transform: none !important; translate: none !important; }
+  .wrapper[data-opening=true] .envelope { opacity: 1; }
+  .wrapper .letter, .wrapper .plane, .wrapper .trail, .wrapper .glint, .wrapper .pulse { opacity: 0 !important; }
+}
