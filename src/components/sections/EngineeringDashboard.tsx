@@ -1,245 +1,119 @@
-/* src/components/sections/EngineeringDashboard.tsx — FULL REPLACEMENT */
 "use client"
 
-import React, { useEffect, useState, useRef, useMemo } from "react"
-import gsap from "gsap"
+import { useCallback, useEffect, useRef, useState } from "react"
+import { ExternalLink, GitBranch, RefreshCw } from "lucide-react"
+import { GITHUB_PROFILE_URL, GITHUB_REFRESH_MS, GITHUB_USERNAME, recentContributionWeeks, type GitHubActivity } from "@/lib/githubActivity"
+import styles from "./EngineeringDashboard.module.css"
 
-interface Commit {
-  repo: string
-  msg: string
-  time: string
-  stats: string
+const commitDate = (date: string) => new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Kolkata" }).format(new Date(date))
+const calendarDate = (date: string) => new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", timeZone: "UTC" }).format(new Date(`${date}T00:00:00Z`))
+
+async function readActivity(signal: AbortSignal): Promise<GitHubActivity> {
+  const response = await fetch("/api/github", { signal })
+  if (!response.ok) throw new Error("GitHub unavailable")
+  const result: GitHubActivity = await response.json()
+  if (result.username !== GITHUB_USERNAME || !Array.isArray(result.errors)) throw new Error("Unexpected activity response")
+  return result
 }
 
-// ── Seeded PRNG (mulberry32) — grid looks identical on every visit
-// Source: https://github.com/bryc/code/blob/master/jshash/PRNGs.md
-function mulberry32(seed: number) {
-  return function () {
-    seed |= 0
-    seed = (seed + 0x6d2b79f5) | 0
-    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed)
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
-  }
+function Metric({ label, value, detail, suffix = "" }: { label: string; value: number | null; detail: string; suffix?: string }) {
+  return <div className={styles.metric}><span>{label}</span><strong key={value === null ? "unknown" : value}>{value === null ? "—" : `${value.toLocaleString("en-IN")}${suffix}`}</strong><small>{detail}</small></div>
 }
-
-const INITIAL_COMMITS: Commit[] = [
-  { repo: "LoopOS",         msg: "refactor: optimize Evaluator retry backoff algorithm",     stats: "+42,-12",  time: "2m ago" },
-  { repo: "SentientWallet", msg: "feat: implement Web3 RPC lock layer fallback",             stats: "+105,-8",  time: "18m ago" },
-  { repo: "gitblamed",      msg: "chore: edge KV caching ttl increased to 24h",             stats: "+4,-1",    time: "1h ago" },
-  { repo: "LoopOS",         msg: "fix: memory leak in Durable Object alarm listener loop",  stats: "+18,-35",  time: "3h ago" },
-  { repo: "LoopOS",         msg: "feat: add 2-check sequential anomaly alarms",             stats: "+310,-12", time: "5h ago" },
-]
 
 export function EngineeringDashboard() {
-  const [commits, setCommits] = useState<Commit[]>(INITIAL_COMMITS)
-  const leetcodeRef = useRef<HTMLSpanElement>(null)
-  const githubRef   = useRef<HTMLSpanElement>(null)
+  const [activity, setActivity] = useState<GitHubActivity | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [failed, setFailed] = useState(false)
+  const requestRef = useRef<AbortController | null>(null)
+  const lastCheckRef = useRef(0)
 
-  // ── GSAP rolling numbers — with proper cleanup
-  useEffect(() => {
-    const tweens: gsap.core.Tween[] = []
-
-    if (leetcodeRef.current) {
-      const obj = { value: 0 }
-      tweens.push(
-        gsap.to(obj, {
-          value: 342,
-          duration: 2.0,
-          ease: "power2.out",
-          onUpdate: () => {
-            if (leetcodeRef.current)
-              leetcodeRef.current.innerText = Math.floor(obj.value).toString() + "+"
-          },
-        })
-      )
-    }
-
-    if (githubRef.current) {
-      const obj = { value: 0 }
-      tweens.push(
-        gsap.to(obj, {
-          value: 78,
-          duration: 1.8,
-          ease: "power2.out",
-          onUpdate: () => {
-            if (githubRef.current)
-              githubRef.current.innerText = Math.floor(obj.value).toString() + "%"
-          },
-        })
-      )
-    }
-
-    // ← FIXED: kill tweens on unmount (prevents memory leaks)
-    return () => tweens.forEach((t) => t.kill())
-  }, [])
-
-  // ── Commit feed simulation
-  useEffect(() => {
-    const repos = ["LoopOS", "SentientWallet", "gitblamed", "automation-platform"]
-    const msgs = [
-      "perf: reduce CF Workers cold start overhead by pre-bundling templates",
-      "feat: add Jaccard duplicate check to Memory layer",
-      "fix: rate limiting threshold trigger sync with KV cache",
-      "chore: bump Hono version and update router schema validation rules",
-      "refactor: wrap openai api stream inside a resilient try-catch loop",
-      "docs: update self-improving evaluation criterion specs",
-    ]
-
-    const interval = setInterval(() => {
-      const newCommit: Commit = {
-        repo:  repos[Math.floor(Math.random() * repos.length)],
-        msg:   msgs[Math.floor(Math.random() * msgs.length)],
-        stats: `+${Math.floor(Math.random() * 150) + 1},-${Math.floor(Math.random() * 50) + 1}`,
-        time:  "Just now",
+  const load = useCallback(() => {
+    requestRef.current?.abort()
+    const controller = new AbortController()
+    requestRef.current = controller
+    void readActivity(controller.signal).then((result) => {
+      if (controller.signal.aborted) return
+      setActivity(result)
+      setFailed(false)
+      lastCheckRef.current = Date.now()
+    }).catch(() => {
+      if (!controller.signal.aborted) setFailed(true)
+    }).finally(() => {
+      if (requestRef.current === controller) {
+        requestRef.current = null
+        setLoading(false)
       }
-      setCommits((prev) => {
-        const updated = prev.map((c) => {
-          if (c.time === "Just now") return { ...c, time: "1m ago" }
-          if (c.time.includes("m ago")) {
-            const mins = parseInt(c.time) + 1
-            return { ...c, time: `${mins}m ago` }
-          }
-          return c
-        })
-        return [newCommit, ...updated].slice(0, 5)
-      })
-    }, 15000)
-
-    return () => clearInterval(interval)
+    })
   }, [])
 
-  // ── Seeded contribution grid — FIXED: useMemo + seeded PRNG
-  // Same seed = same grid on every visit = looks real, not random
-  const contributionCells = useMemo(() => {
-    const rand = mulberry32(20250101) // fixed seed: arbitrary but constant
-    const intensities = [
-      "bg-border/20",
-      "bg-success/20",
-      "bg-success/40",
-      "bg-success/70",
-      "bg-success",
-    ]
-    return Array.from({ length: 15 * 7 }, (_, i) => {
-      const r = rand()
-      let idx = 0
-      if (r > 0.8)       idx = 4
-      else if (r > 0.6)  idx = 3
-      else if (r > 0.4)  idx = 2
-      else if (r > 0.15) idx = 1
-      return { id: i, cls: intensities[idx] }
-    })
-  }, []) // ← no deps: computed once, never again
+  useEffect(() => {
+    void load()
+    const refresh = () => {
+      if (!document.hidden && Date.now() - lastCheckRef.current >= GITHUB_REFRESH_MS) { setLoading(true); void load() }
+    }
+    const timer = window.setInterval(refresh, GITHUB_REFRESH_MS)
+    document.addEventListener("visibilitychange", refresh)
+    return () => {
+      window.clearInterval(timer)
+      document.removeEventListener("visibilitychange", refresh)
+      const pendingRequest = requestRef.current
+      requestRef.current = null
+      pendingRequest?.abort()
+    }
+  }, [load])
+
+  const calendar = activity?.calendar
+  const cells = calendar ? recentContributionWeeks(calendar) : []
+  const visibleTotal = cells.reduce((sum, day) => sum + (day.count ?? 0), 0)
+  const commits = activity?.commits
+  const notices = failed ? [activity ? "GitHub could not be refreshed. Showing the last successful response." : "GitHub is temporarily unavailable. Try again or open the profile directly."] : activity?.errors ?? []
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-6 py-16 md:py-24 border-t border-border/50">
-      {/* Header */}
-      <div className="flex flex-col space-y-3 mb-12">
-        <span className="font-mono text-xs font-bold text-accent tracking-widest uppercase">
-          ENGINEERING SNAPSHOT
-        </span>
-        <h2 className="text-2xl md:text-3xl font-extrabold text-text tracking-tight">
-          Proof of Active Competence
-        </h2>
-        <p className="text-sm text-text-2 max-w-2xl font-sans leading-relaxed">
-          Recruiters trust evidence over claims. LeetCode progress, active development telemetry, and commit cadence.
-        </p>
+    <section id="proof" className={`w-full max-w-7xl mx-auto px-6 py-16 md:py-24 border-t border-border/50 scroll-mt-24 ${styles.section}`} aria-labelledby="proof-title" data-github-status={loading ? "loading" : failed ? "unavailable" : activity?.errors.length ? "partial" : "connected"}>
+      <div className={styles.header}>
+        <div>
+          <p className="font-mono text-xs font-bold text-accent tracking-widest uppercase mb-3">ENGINEERING SNAPSHOT</p>
+          <h2 id="proof-title" className="text-2xl md:text-3xl font-extrabold text-text tracking-tight">Proof of Active Competence</h2>
+          <p className={styles.description}>Actual public GitHub activity: recent commits, profile statistics, and the contribution calendar visible on my profile.</p>
+        </div>
+        <a className={styles.profile} href={activity?.profile?.url ?? GITHUB_PROFILE_URL} target="_blank" rel="noopener noreferrer"><GitBranch size={15} aria-hidden="true" />@{activity?.profile?.login ?? GITHUB_USERNAME}<ExternalLink size={12} aria-hidden="true" /></a>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
-        {/* Left: Commit feed */}
-        <div className="border border-border bg-surface rounded-lg p-6 flex flex-col justify-between font-mono text-xs shadow-panel">
-          <div className="flex items-center justify-between border-b border-border/50 pb-3 mb-4">
-            <span className="text-[10px] text-text-3 uppercase tracking-wider font-bold flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-              {/* FIXED: removed "Live" claim. This is illustrative commit history */}
-              Recent Commits (Illustrative)
-            </span>
-            <span className="text-[9px] text-text-3 font-semibold">vaibhav7506</span>
-          </div>
-
-          <div className="flex-grow space-y-3.5 mb-6 min-h-[220px]">
-            {commits.map((c, idx) => (
-              <div
-                  key={`${c.repo}-${c.time}-${idx}`}
-                className="flex items-start gap-3 border-l border-border/30 pl-3 py-0.5 hover:border-accent/40 transition-colors duration-150"
-              >
-                <div className="flex flex-col space-y-0.5 flex-grow">
-                  <div className="flex items-center gap-2">
-                    <span className="text-text-mono font-semibold text-[10px] uppercase">{c.repo}</span>
-                    <span className="text-[9px] text-text-3">{c.time}</span>
-                  </div>
-                  <p className="text-text-2 text-[11px] leading-relaxed">{c.msg}</p>
-                </div>
-                <span className="text-[9px] font-semibold text-success bg-success/5 border border-success/15 px-1.5 py-0.5 rounded shrink-0">
-                  {c.stats}
-                </span>
-              </div>
-            ))}
-          </div>
-
-          <div className="text-[9px] text-text-3 uppercase border-t border-border/30 pt-3">
-            Illustrative commit log reflecting active development cadence across projects.
-          </div>
+      {notices.length > 0 && <div className={styles.notice} role="status">{notices.join(" ")}</div>}
+      <div className={styles.layout} aria-busy={loading}>
+        <div className={`${styles.card} ${styles.feed}`}>
+          <div className={styles.cardHeading}><h3>Recent public commits</h3><span className={styles.badge}>GITHUB</span></div>
+          {commits ? commits.length ? <ol className={styles.commits}>
+            {commits.map((commit) => <li key={`${commit.repo}:${commit.sha}`}><a href={commit.url} target="_blank" rel="noopener noreferrer" className={styles.commit}>
+              <div className={styles.commitMeta}><strong>{commit.repo}</strong><time dateTime={commit.committedAt}>{commitDate(commit.committedAt)}</time></div>
+              <p>{commit.message}</p><span className={styles.sha}>{commit.sha.slice(0, 7)}<ExternalLink size={10} aria-hidden="true" /></span>
+            </a></li>)}
+          </ol> : <p className={styles.empty}>No public commits were returned by GitHub.</p> : loading ? <div aria-label="Loading recent commits">{Array.from({ length: 5 }, (_, index) => <div key={index} className={styles.skeleton} />)}</div> : <p className={styles.empty}>Recent commits are unavailable. You can still view the profile on GitHub.</p>}
+          <p className={styles.feedNote}>Commit messages and dates come from GitHub search. Public repositories only; newly pushed commits may take time to appear in its search index.</p>
         </div>
 
-        {/* Right: Stats + Heatmap */}
-        <div className="flex flex-col gap-6">
-          <div className="grid grid-cols-2 gap-4 border border-border bg-surface p-6 rounded-lg shadow-panel">
-            <div className="flex flex-col">
-              <span className="font-mono text-[10px] text-text-3 font-bold uppercase tracking-wider">LEETCODE</span>
-              <span ref={leetcodeRef} className="text-2xl md:text-3xl font-extrabold text-text font-mono mt-1">0+</span>
-              <span className="font-sans text-[11px] text-text-2 mt-1">340+ Problems Solved</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="font-mono text-[10px] text-text-3 font-bold uppercase tracking-wider">GITHUB STREAK</span>
-              <span ref={githubRef} className="text-2xl md:text-3xl font-extrabold text-text-mono font-mono mt-1">0%</span>
-              <span className="font-sans text-[11px] text-text-2 mt-1">Active commit streak</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="font-mono text-[10px] text-text-3 font-bold uppercase tracking-wider">CURRENT FOCUS</span>
-              <span className="text-sm font-extrabold text-text font-mono mt-2 uppercase tracking-wide">LoopOS</span>
-              <span className="font-sans text-[11px] text-text-2 mt-0.5">Observability Layer</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="font-mono text-[10px] text-text-3 font-bold uppercase tracking-wider">PRIMARY STACK</span>
-              <span className="text-[11px] font-bold text-text-2 font-mono mt-2 uppercase leading-snug">
-                TypeScript / CF Workers / Next.js
-              </span>
-              <span className="font-sans text-[11px] text-text-3 mt-0.5">Serverless Edge</span>
-            </div>
+        <div className={styles.right}>
+          <div className={`${styles.card} ${styles.metrics}`}>
+            <Metric label="Public repositories" value={activity?.profile?.publicRepos ?? null} detail="From the GitHub profile" />
+            <Metric label="Followers" value={activity?.profile?.followers ?? null} detail="Public GitHub followers" />
+            <Metric label="Contributions" value={calendar?.total ?? null} detail="Past year · profile calendar" />
+            <Metric label="Current streak" value={calendar?.currentStreak ?? null} suffix={calendar?.streakReachesStart ? "+" : ""} detail="Consecutive active days · UTC" />
           </div>
-
-          {/* Contribution heatmap — seeded, consistent across visits */}
-          <div className="border border-border bg-surface p-6 rounded-lg flex flex-col justify-between shadow-panel">
-            <div className="flex items-center justify-between border-b border-border/50 pb-2 mb-4 font-mono">
-              <span className="text-[10px] text-text-3 uppercase tracking-wider font-bold">
-                Contribution Activity (Last 15 Weeks)
-              </span>
-              <div className="flex items-center gap-1.5 text-[9px] text-text-3">
-                <span>Less</span>
-                <div className="w-2 h-2 rounded-[1.5px] bg-border/20" />
-                <div className="w-2 h-2 rounded-[1.5px] bg-success/20" />
-                <div className="w-2 h-2 rounded-[1.5px] bg-success/50" />
-                <div className="w-2 h-2 rounded-[1.5px] bg-success" />
-                <span>More</span>
+          <div className={styles.card}>
+            <div className={styles.cardHeading}><h3>Contribution activity</h3><span className={styles.badge}>15 WEEKS</span></div>
+            {calendar ? <>
+              <div className={styles.heatmap} role="img" aria-label={`${visibleTotal} contributions from ${cells[0].date} through ${calendar.to}, from the public GitHub profile calendar.`}>
+                {cells.map((day) => <span key={day.date} className={styles.day} data-level={day.level ?? undefined} data-future={day.count === null} title={day.count === null ? undefined : `${day.date}: ${day.count} contribution${day.count === 1 ? "" : "s"}`} />)}
               </div>
-            </div>
-            {/* FIXED: useMemo cells, seeded PRNG — no DOM churn, consistent pattern */}
-            <div
-              className="flex flex-wrap gap-1 items-center justify-center py-2"
-              role="img"
-              aria-label="GitHub contribution heatmap showing 15 weeks of activity"
-            >
-              {contributionCells.map((cell) => (
-                <div
-                  key={cell.id}
-                  className={`w-2.5 h-2.5 rounded-[1.5px] transition-all hover:scale-125 duration-150 ${cell.cls}`}
-                />
-              ))}
-            </div>
+              <div className={styles.calendarFooter}><span>{calendarDate(cells[0].date)} – {calendarDate(calendar.to)} · UTC</span><div className={styles.legend} aria-hidden="true"><span>Less</span>{[0, 1, 2, 3, 4].map((level) => <span className={styles.day} key={level} data-level={level} />)}<span>More</span></div></div>
+              <p className={`${styles.feedNote} mt-4`}>Matches activity visible on the public profile, including any anonymized private contributions enabled there. Contribution totals include more than commits.</p>
+            </> : <p className={styles.empty}>{loading ? "Loading the contribution calendar…" : "The contribution calendar is unavailable. No activity has been estimated."}</p>}
           </div>
         </div>
+      </div>
+      <div className={styles.status}>
+        <span role="status" aria-live="polite">{loading ? "Checking GitHub…" : activity ? `Last checked ${new Intl.DateTimeFormat("en-IN", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Kolkata" }).format(new Date(activity.checkedAt))} IST · cached for up to 15 minutes` : "No GitHub data loaded"}</span>
+        <button className={styles.refresh} type="button" disabled={loading} onClick={() => { setLoading(true); void load() }}><RefreshCw size={12} aria-hidden="true" />{loading ? "Checking…" : failed ? "Try again" : "Refresh"}</button>
       </div>
     </section>
   )
