@@ -1,10 +1,13 @@
 "use client"
 import { AvailabilityWidget } from "@/components/ui/AvailabilityWidget"
-import { MagneticButton } from "@/components/ui/MagneticButton"
+import { EmailContactButton } from "@/components/ui/EmailContactButton"
+import { ResumeViewLink } from "@/components/ui/ResumeViewLink"
+import { SocialLinks } from "@/components/ui/SocialLinks"
+import { CopyEmail } from "@/components/ui/CopyEmail"
 
 export function ContactSection() {
   return (
-    <section className="w-full border-t border-border/50 bg-[#0A0D12]">
+    <section id="contact" className="w-full scroll-mt-28 border-t border-border/50 bg-[#0A0D12]">
       {/* Contact Content Container */}
       <div className="max-w-7xl mx-auto px-6 py-16 md:py-24 flex flex-col items-center text-center space-y-8">
         <span className="font-mono text-xs font-bold text-accent tracking-widest uppercase">
@@ -20,70 +23,16 @@ export function ContactSection() {
 
         {/* Call to action */}
          <div className="pt-2 flex flex-col items-center gap-4">
-          <MagneticButton
-            href="https://mail.google.com/mail/?view=cm&to=vs7977722@gmail.com&subject=Opportunity%20via%20Portfolio&body=Hi%20Vaibhav%2C"
-            target="_blank"
-            strength={20}
-            radius={90}
-            className="inline-flex items-center justify-center px-8 py-3.5 font-mono text-xs font-bold tracking-wider rounded-md bg-accent text-bg hover:bg-accent/90 hover:scale-[1.02] active:scale-[0.98] transition-all duration-150"
-          >
-            SEND ME AN EMAIL →
-          </MagneticButton>
-           <div className="flex items-center gap-3 font-mono text-[11px]">
-            <div>
-            <MagneticButton
-              href="/Vaibhav_resume.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              strength={12}
-              radius={60}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-md border border-border bg-surface hover:bg-hover hover:text-accent hover:border-accent/40 transition-all duration-150 font-bold tracking-wider"
-            >
-              RESUME (SWE) ↓
-            </MagneticButton>
-            </div>
-             <div>
-            <MagneticButton
-              href="/Vaibhav_AIML_resume.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              strength={12}
-              radius={60}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-md border border-border bg-surface hover:bg-hover hover:text-accent hover:border-accent/40 transition-all duration-150 font-bold tracking-wider"
-            >
-              RESUME (AI/ML) ↓
-            </MagneticButton>
-            </div>
+          <EmailContactButton />
+          <CopyEmail />
+           <div id="resume" className="flex flex-wrap justify-center items-start gap-3 scroll-mt-28">
+            <ResumeViewLink kind="sde" />
+            <ResumeViewLink kind="aiml" />
           </div>
         </div>
 
         {/* Socials */}
-        <div className="flex gap-6 font-mono text-[11px] font-bold text-text-2 pt-4">
-          <a
-            href="https://github.com/vaibhav7506"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-accent transition-colors duration-150"
-          >
-            GITHUB ↗
-          </a>
-          <a
-            href="https://www.linkedin.com/in/vaibhav-sharma-996aa8249/" // Placeholder Link, standard format
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-accent transition-colors duration-150"
-          >
-            LINKEDIN ↗
-          </a>
-          <a
-            href="https://leetcode.com/u/vaibhav7506/" // Placeholder Link, standard format
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-accent transition-colors duration-150"
-          >
-            LEETCODE ↗
-          </a>
-        </div>
+        <SocialLinks />
       </div>
 
       {/* Global Footer */}
