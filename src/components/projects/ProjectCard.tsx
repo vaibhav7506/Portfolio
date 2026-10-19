@@ -2,32 +2,22 @@
 
 import Link from "next/link"
 import { Project } from "@/lib/projects"
+import { ProjectStatusBadge } from "./ProjectStatusBadge"
 
 interface ProjectCardProps {
   project: Project
 }
 
 export function ProjectCard({ project }: ProjectCardProps) {
-  const isLive = project.status === "live"
-
   return (
-    <div className="group relative flex flex-col justify-between p-6 border border-border bg-surface rounded-lg hover:border-accent/40 transition-all duration-250 ease-out hover:shadow-2xl">
+    <div data-project={project.slug} className="group relative flex flex-col justify-between p-6 border border-border bg-surface rounded-lg hover:border-accent/40 transition-all duration-250 ease-out hover:shadow-2xl">
       {/* Decorative Top Glow */}
       <div className="absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-accent/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-250" />
 
       <div>
         {/* Header (Status + Year) */}
         <div className="flex items-center justify-between mb-4 font-mono text-[10px]">
-          <span
-            className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border ${
-              isLive
-                ? "border-success/20 bg-success/5 text-success"
-                : "border-warning/20 bg-warning/5 text-warning"
-            }`}
-          >
-            <span className={`w-1 h-1 rounded-full ${isLive ? "bg-success" : "bg-warning animate-pulse"}`} />
-            {project.status.toUpperCase()}
-          </span>
+          <ProjectStatusBadge status={project.status} />
           <span className="text-text-3 font-semibold">{project.year}</span>
         </div>
 
@@ -83,7 +73,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
               rel="noopener noreferrer"
               className="text-text-2 hover:text-text transition-colors duration-150"
             >
-              LIVE ↗
+              DEMO ↗
             </a>
           )}
           <a

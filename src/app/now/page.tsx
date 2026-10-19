@@ -25,10 +25,10 @@ export default function NowPage() {
             /now
           </span>
           <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-text">
-            What I'm doing now
+            What I&apos;m doing now
           </h1>
           <p className="text-sm text-text-2 font-sans leading-relaxed">
-            A snapshot of what's actually occupying my time. Updated June 2026.
+            A snapshot of what&apos;s actually occupying my time. Updated June 2026.
           </p>
           <div className="flex items-center gap-2 font-mono text-[11px]">
             <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
@@ -48,13 +48,13 @@ export default function NowPage() {
             </h2>
             <div className="space-y-4 pl-3 border-l border-border/50">
               <div className="space-y-1.5">
-                <p className="text-sm font-bold text-text">Going back to everything I've built and making it better</p>
+                <p className="text-sm font-bold text-text">Going back to everything I&apos;ve built and making it better</p>
                 <p className="text-sm text-text-2 font-sans leading-relaxed">
                   Not chasing new projects right now — going deep on the ones that exist. LoopOS, GitBlamed, SentientWallet, the Automation Platform. Each one has rough edges I know about and am systematically fixing. The engineering decisions were right. The execution details are getting tighter.
                 </p>
               </div>
               <div className="p-4 border border-border bg-surface rounded-lg font-mono text-[11px] text-text-mono leading-relaxed">
-                "Ship it, then make it honest." — current operating mode
+                &quot;Ship it, then make it honest.&quot; — current operating mode
               </div>
             </div>
           </section>
@@ -69,19 +69,19 @@ export default function NowPage() {
               <div className="space-y-1.5">
                 <p className="text-sm font-bold text-text">Japanese — from scratch</p>
                 <p className="text-sm text-text-2 font-sans leading-relaxed">
-                  Learning a language with a completely different structure than anything I've studied before. There's something about forcing your brain into an entirely foreign grammar system that sharpens how you think about structure in general. Early days — hiragana first.
+                  Learning a language with a completely different structure than anything I&apos;ve studied before. There&apos;s something about forcing your brain into an entirely foreign grammar system that sharpens how you think about structure in general. Early days — hiragana first.
                 </p>
               </div>
               <div className="space-y-1.5">
                 <p className="text-sm font-bold text-text">AI — going deeper than the surface</p>
                 <p className="text-sm text-text-2 font-sans leading-relaxed">
-                  Moving past "use the API" into how these systems actually work. Attention mechanisms, fine-tuning pipelines, embedding spaces, retrieval architectures. The goal is to build AI systems I can fully reason about, not just integrate.
+                  Moving past &quot;use the API&quot; into how these systems actually work. Attention mechanisms, fine-tuning pipelines, embedding spaces, retrieval architectures. The goal is to build AI systems I can fully reason about, not just integrate.
                 </p>
               </div>
               <div className="space-y-1.5">
                 <p className="text-sm font-bold text-text">MERN — going in depth</p>
                 <p className="text-sm text-text-2 font-sans leading-relaxed">
-                  I've shipped with these tools. Now learning the internals — MongoDB aggregation pipelines, Express middleware architecture, React reconciler, Node.js event loop mechanics. The difference between using a tool and understanding it is where senior engineers live.
+                  I&apos;ve shipped with these tools. Now learning the internals — MongoDB aggregation pipelines, Express middleware architecture, React reconciler, Node.js event loop mechanics. The difference between using a tool and understanding it is where senior engineers live.
                 </p>
               </div>
             </div>
@@ -97,7 +97,7 @@ export default function NowPage() {
               <div className="space-y-1.5">
                 <p className="text-sm font-bold text-text">A storybook — three stories written from scratch</p>
                 <p className="text-sm text-text-2 font-sans leading-relaxed">
-                  Not technical writing. Actual stories. Three done so far, written from nothing. I find that writing fiction and writing code use the same underlying skill — you're constructing a world with internal rules that has to make sense to someone else. The medium is different. The discipline is identical.
+                  Not technical writing. Actual stories. Three done so far, written from nothing. I find that writing fiction and writing code use the same underlying skill — you&apos;re constructing a world with internal rules that has to make sense to someone else. The medium is different. The discipline is identical.
                 </p>
               </div>
             </div>
@@ -111,7 +111,7 @@ export default function NowPage() {
             </h2>
             <div className="pl-3 border-l border-border/30">
               <p className="text-sm text-text-3 font-sans leading-relaxed">
-                Starting new projects for the sake of it. Chasing trends. Building things I can't explain the architecture of. Adding features that look impressive but don't make the system more honest.
+                Starting new projects for the sake of it. Chasing trends. Building things I can&apos;t explain the architecture of. Adding features that look impressive but don&apos;t make the system more honest.
               </p>
             </div>
           </section>
@@ -119,7 +119,7 @@ export default function NowPage() {
           {/* Footer note */}
           <div className="border-t border-border/50 pt-8 space-y-3">
             <p className="text-xs text-text-3 font-sans leading-relaxed">
-              This is a <a href="https://nownownow.com/about" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">/now page</a> — a concept by Derek Sivers. It's a public declaration of what actually has my attention, not what looks good to say.
+              This is a <a href="https://nownownow.com/about" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">/now page</a> — a concept by Derek Sivers. It&apos;s a public declaration of what actually has my attention, not what looks good to say.
             </p>
             <div className="flex items-center gap-4 font-mono text-[11px]">
               <Link href="/" className="text-accent hover:text-accent/80 transition-colors">

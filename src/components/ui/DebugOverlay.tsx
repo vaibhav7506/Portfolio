@@ -9,7 +9,7 @@ export function DebugOverlay() {
   const [scrollY, setScrollY] = useState(0)
   const [renderCount, setRenderCount] = useState(0)
   const frameRef = useRef<number>(0)
-  const lastTimeRef = useRef<number>(performance.now())
+  const lastTimeRef = useRef<number>(0)
   const framesRef = useRef(0)
 
   // Shift key toggle
@@ -35,6 +35,8 @@ export function DebugOverlay() {
   // FPS counter
   useEffect(() => {
     if (!visible) return
+    lastTimeRef.current = performance.now()
+    framesRef.current = 0
     const tick = () => {
       framesRef.current++
       const now = performance.now()
@@ -53,8 +55,7 @@ export function DebugOverlay() {
   useEffect(() => {
     if (!visible) return
     const interval = setInterval(() => {
-      // @ts-ignore — performance.memory is Chrome-only
-      const mem = (performance as any).memory
+      const mem = (performance as Performance & { memory?: { usedJSHeapSize: number } }).memory
       if (mem) {
         setMemory(`${Math.round(mem.usedJSHeapSize / 1048576)}MB`)
       }

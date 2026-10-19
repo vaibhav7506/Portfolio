@@ -21,18 +21,18 @@ const STAGES: StageNode[] = [
     desktop: { x: 400, y: 90  }, mobile: { x: 200, y: 55  },
   },
   {
-    id: "scale", label: "SCALE", project: "GitBlamed",
-    desc: "Built for edge delivery and viral load, not just demos",
+    id: "scale", label: "CACHE", project: "GitBlamed",
+    desc: "Reuse username-specific responses with a 24-hour KV cache",
     desktop: { x: 650, y: 280 }, mobile: { x: 345, y: 200 },
   },
   {
-    id: "evaluate", label: "EVALUATE", project: "Automation",
-    desc: "Score outputs against explicit, weighted criteria",
+    id: "evaluate", label: "EVALUATE", project: "LLMGuard",
+    desc: "Turn endpoint responses into heuristic findings and review guidance",
     desktop: { x: 400, y: 470 }, mobile: { x: 200, y: 345 },
   },
   {
-    id: "recover", label: "RECOVER", project: "SentientWallet",
-    desc: "Guardrails enforced before the LLM ever decides",
+    id: "recover", label: "VALIDATE", project: "SentientWallet",
+    desc: "Validate generated proposals before the simulation handoff",
     desktop: { x: 150, y: 280 }, mobile: { x: 55,  y: 200 },
   },
 ]
@@ -82,7 +82,7 @@ export function UnifiedArchitectureSection() {
           UNIFIED ARCHITECTURE
         </span>
         <h2 className="text-2xl md:text-3xl font-extrabold text-text tracking-tight">
-          One engineering question, four answers.
+          Reliability decisions across selected projects.
         </h2>
         <p className="text-sm text-text-2 max-w-2xl font-sans leading-relaxed">
           &quot;How do you build AI-adjacent systems that don&apos;t fail silently, don&apos;t scale poorly, and don&apos;t surprise you in production?&quot;

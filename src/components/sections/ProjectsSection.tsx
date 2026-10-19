@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useRef } from "react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { projects } from "@/lib/projects"
@@ -49,8 +49,8 @@ export function ProjectsSection() {
 //   return () => ctx.revert()
 // }, [])
 
-  const featuredProjects = projects.filter((p) => p.featured)
-  const remainingProjects = projects.filter((p) => !p.featured)
+  const featuredProjects = projects.filter((p) => p.featured).sort((a, b) => a.order - b.order)
+  const remainingProjects = projects.filter((p) => !p.featured).sort((a, b) => a.order - b.order)
 
   return (
    <section ref={sectionRef} id="work" className="w-full max-w-7xl mx-auto px-6 py-16 md:py-24 border-t border-border/50 scroll-mt-[56px]">
@@ -60,10 +60,10 @@ export function ProjectsSection() {
           PROJECTS
         </span>
         <h2 className="text-2xl md:text-3xl font-extrabold text-text tracking-tight">
-          Production-grade systems & infrastructure
+          AI tools & full-stack applications
         </h2>
         <p className="text-sm text-text-2 max-w-2xl font-sans leading-relaxed">
-          These aren&apos;t toy projects. They are deployed systems built to handle real traffic, manage financial risk, and enforce strict execution guardrails.
+          Reviewable code migrations, observable AI loops, endpoint security checks, and queued workflows. Each case study includes implementation evidence, current scope, and limitations.
         </p>
       </div>
 
