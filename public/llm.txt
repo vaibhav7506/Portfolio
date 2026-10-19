@@ -15,10 +15,10 @@ EDUCATION:
   Duration: 2022 – 2026
 
 SUMMARY:
-  Full-Stack Engineer and AI Systems specialist. Built and deployed 4+ production-grade
-  applications integrating 15+ third-party APIs, serverless infrastructure, and AI services.
-  Specializes in autonomous AI agents, LLM decision engines, multi-stage ML pipelines,
-  and safety-critical AI systems with real-time constraints and risk guardrails.
+  CS engineer focused on AI agent infrastructure and full-stack applications.
+  The portfolio includes live demos, a treasury-agent prototype, and a browser QA
+  project in development. Case studies document implemented capabilities, source
+  evidence, and current limitations. No latency, cold-start, or load benchmark is supplied.
 
 SKILLS:
   Frontend:     React.js, TypeScript, JavaScript, TailwindCSS, Next.js, Vite
@@ -36,76 +36,340 @@ SKILLS:
   Core:         DSA, System Design, OOP, API Design, Caching, Rate Limiting,
                 Auth & Authorization, Web3, DeFi
 
-PROJECTS:
+CURRENT PORTFOLIO PROJECTS:
 
-  LoopOS (in development, 2025)
-    Role: Sole Architect & Engineer
-    Stack: TypeScript, Cloudflare Workers, Durable Objects, Hono.js, Cloudflare D1, AI Gateway
-    — AI loop observability platform with generator→evaluator architecture
-    — Weighted criterion scoring across 4 criteria (weights must sum to 1.0)
-    — 2-check sequential anomaly detection before alarms fire
-    — INFRA_FAILURE vs BUSINESS_FAILURE classification
-    — Alarm-based Durable Object execution — runs cannot be lost
-    — Cost tracking via Cloudflare AI Gateway
-    GitHub: https://github.com/vaibhav7506/LoopOS
+1. RunbookOS (Active, 2026)
+Purpose: Human-governed AI incident response
+Role: Full-Stack Engineer
+An incident-response platform that collects diagnostic evidence, validates AI recommendations, and gates runbook actions through Java policy and human approval. Spring Boot owns authorization and state; signed n8n workflows handle bounded orchestration. Demo Mode uses deterministic analysis and simulated safe actions.
+Problem: Incident responders need useful AI recommendations without giving a model or workflow engine unchecked authority over remediation.
+Vaibhav's contribution: I built the Spring Boot control plane, Next.js response workspace, evidence-linked analysis, risk-based approval flow, and signed n8n dispatch with persisted audit records.
+Build duration: Not supplied; the project year is not its build duration.
+Development: Ongoing
+Stack: Java 21, Spring Boot, Next.js, TypeScript, PostgreSQL, Redis, n8n, Resilience4j, Docker, OpenTelemetry
+Implementation detail — Control Plane: Java policy + human approval
+Implementation detail — Orchestration: Signed n8n dispatch
+Implementation detail — AI Evidence: Citation validation + provider fallback
+Implementation detail — Demo Boundary: Simulated safe actions
+Implementation + test evidence: The policy engine denies prohibited actions regardless of the configured rule, blocks high-risk actions in Demo Mode, and requires approval for reversible actions. Focused repository tests cover these decisions.
+Current limitations: Demo Mode uses deterministic analysis and simulated safe actions. Live integrations require credentials and activated n8n workflows. The public workspace requires sign-in; the capture shows its guided landing-page preview, not a live incident run.
+Product capture scope: Deployed product · guided preview. Actual deployed landing page with an illustrative incident preview. The incident workspace requires sign-in.
+Case study: /work/runbookos
+Architecture walkthrough: /work/runbookos#runbookos-walkthrough
+GitHub: https://github.com/vaibhav7506/Runbookos
+Live demo: https://runbookos-ten.vercel.app/
+Evidence — Inspect policy enforcement: https://github.com/vaibhav7506/Runbookos/blob/189f6222d929e66aac83b2312b9180012d4406a6/services/control-plane/src/main/java/com/vaibhav/runbookos/policy/PolicyEngine.java#L91-L117
+Evidence — Inspect policy tests: https://github.com/vaibhav7506/Runbookos/blob/189f6222d929e66aac83b2312b9180012d4406a6/services/control-plane/src/test/java/com/vaibhav/runbookos/policy/PolicyEngineTest.java#L15-L60
+Evidence — Inspect citation validation: https://github.com/vaibhav7506/Runbookos/blob/189f6222d929e66aac83b2312b9180012d4406a6/services/control-plane/src/main/java/com/vaibhav/runbookos/analysis/AnalysisQualityValidator.java#L10-L48
 
-  GitBlamed (live, 2024)
-    Role: Full-Stack Developer
-    Stack: React 19, TypeScript, Vite, Cloudflare Workers, Hono.js, Groq, Gemini Flash, Claude, KV
-    — AI-powered GitHub activity roaster built for viral sharing
-    — Analyzes GitHub user activity via GitHub GraphQL API
-    — 3-provider sequential AI fallback: Gemini Flash → Groq → Claude
-    — Edge KV caching with 24h TTL, 0 cold starts, <200ms median response
-    — Per-user SVG OG cards for Twitter/LinkedIn shareability
-    — Monorepo architecture, live on Vercel
-    Live: https://git-blamed-web.vercel.app
-    GitHub: https://github.com/vaibhav7506/gitblamed
+2. CodeShift AI (Live demo, 2026)
+Purpose: Review-first JavaScript-to-TypeScript migration workspace
+Role: Sole Architect & Engineer
+A developer tool that analyzes legacy JavaScript repositories, generates scoped TypeScript migration plans, applies conservative refactors through a local CLI, runs validation, and opens GitHub pull requests only after explicit human approval.
+Problem: A JavaScript-to-TypeScript migration needs a reviewable patch and validation evidence before changes are published.
+Vaibhav's contribution: I built the review workspace and local CLI for repository analysis, scoped migration plans, conservative patches, validation artifacts, and separately approved Git operations.
+Build duration: Not supplied; the project year is not its build duration.
+Development: Current scope is documented; no completion date is supplied.
+Stack: Next.js, React, TypeScript, TailwindCSS, Node.js, npm Workspaces, GitHub API, OpenAI BYOK, Vercel
+Implementation detail — Migration Flow: Analyze → Plan → Patch → Validate → PR
+Implementation detail — Safety Model: Human approval before every Git mutation
+Implementation detail — Execution Mode: Local CLI, no unsafe server-side code execution
+Implementation detail — Validation: Tests, lint, typecheck, build gates
+Implementation detail — Demo Proof: Reviewable GitHub PR generated end-to-end
+Public migration artifact: A JavaScript-to-TypeScript utility migration is preserved in public demo PR #1, with an inspectable code diff and review history.
+Current limitations: The supported migration path is deliberately conservative. Unsupported recipes and difficult refactors still need manual work; missing validation scripts are marked SKIPPED.
+Product capture scope: Deployed product · sample preview. Deployed interface with illustrative migration data. Inspect demo PR #1 below for the actual patch.
+Case study: /work/codeshift-ai
+Architecture walkthrough: /work/codeshift-ai#codeshift-walkthrough
+GitHub: https://github.com/vaibhav7506/codeshift-ai
+Live demo: https://codeshiftweb.vercel.app/
+Evidence — Review demo PR #1: https://github.com/vaibhav7506/codeshift-ai-demo-legacy-js/pull/1
+Evidence — Inspect validation tests: https://github.com/vaibhav7506/codeshift-ai/blob/e4952bb675c1346726b2d50b76ddff7eae0b0c2d/apps/cli/src/validation.test.ts#L135-L175
 
-  SentientWallet (live, 2025)
-    Role: AI Engineer
-    Stack: Python, LangChain, OpenAI API, Web3, DeFi, Real-time Market Data, Rule-based Guardrails
-    — Autonomous AI Agent CFO for DAO treasury management
-    — Monitors crypto markets 24/7, executes decisions in under 3 seconds
-    — Rule-based guardrail layer enforced BEFORE the LLM — LLM cannot bypass constraints
-    — 5 named risk scenarios: CRASH_DETECTION, EXPLOIT_DETECTION, LIQUIDITY_CRISIS,
-      SLIPPAGE_SPIKE, RUG_PULL_SIGNAL
-    — 100% plain-English audit log for DAO governance accountability
-    GitHub: https://github.com/vaibhav7506/SentientWallet
+3. LoopOS (Live demo, 2025)
+Purpose: The Operating System for Self-Improving AI Systems
+Role: Sole Architect & Engineer
+A loop observability platform with generator→evaluator architecture, weighted criterion scoring, 2-check anomaly detection, and alarm-based Durable Object execution.
+Problem: AI iteration loops can repeat poor outputs or spend their budget without a clear record of what happened.
+Vaibhav's contribution: I built the loop configurator, generator/evaluator execution, weighted scoring, and persisted iteration records around Cloudflare Durable Objects and D1.
+Build duration: Not supplied; the project year is not its build duration.
+Development: Current scope is documented; no completion date is supplied.
+Stack: TypeScript, Cloudflare Workers, Durable Objects, Cloudflare AI Gateway, Hono.js, Cloudflare D1
+Implementation detail — Architecture: Generator → Evaluator Loop
+Implementation detail — Anomaly Detection: Duplicate output + budget spike
+Implementation detail — Cost Tracking: Cloudflare AI Gateway
+Implementation detail — Failure Classification: INFRA vs BUSINESS
+Source-backed result: Duplicate outputs and unusually expensive iterations are flagged as anomalies, and the executor records and stops the affected run.
+Current limitations: Anomaly detection uses word-set similarity and cost thresholds. Semantic drift detection and a production load benchmark are not demonstrated here.
+Product capture scope: Deployed product. Live task and score-threshold controls in the loop builder.
+Case study: /work/loopos
+Architecture walkthrough: /work/loopos#loopos-introduction
+GitHub: https://github.com/vaibhav7506/LoopOS
+Live demo: https://loopos-web.pages.dev/
+Evidence — Inspect anomaly checks: https://github.com/vaibhav7506/LoopOS/blob/d23ee9101aec7882e45c5fcc5665354360abc106/apps/api/src/lib/anomaly.ts#L52-L113
+Evidence — Inspect executor: https://github.com/vaibhav7506/LoopOS/blob/d23ee9101aec7882e45c5fcc5665354360abc106/apps/api/src/durable-objects/loop-executor.ts#L287-L390
 
-  Automation Platform (live, 2024)
-    Role: Full-Stack Developer
-    Stack: React, Node.js, Express, MongoDB, Socket.io
-    — Zapier-style no-code workflow automation for 15+ APIs
-      (Gmail, Slack, Google Sheets, Twitter, Stripe)
-    — DAG executor with topological sort and cycle detection on every save
-    — Typed API adapters for heterogeneous response schemas
-    — Per-workspace AES-256 credential encryption
-    — Per-node configurable failure policy (halt vs continue)
-    — Drag-and-drop workflow builder with conditional logic
-    GitHub: https://github.com/vaibhav7506
+4. GitBlamed (Live demo, 2024)
+Purpose: GitHub activity roasts with caching and provider fallback
+Role: Full-Stack Developer
+A GitHub activity app with a sequential Groq → Gemini → Claude fallback chain, deterministic local roasts when providers are unavailable, a 24-hour KV cache, and per-user SVG share cards.
+Problem: A GitHub activity app should remain useful when an AI provider fails, while avoiding repeated generation for the same user.
+Vaibhav's contribution: I built the username-to-calendar flow, contribution parsing, model-provider fallback, KV cache, and per-user share-card route.
+Build duration: Not supplied; the project year is not its build duration.
+Development: Current scope is documented; no completion date is supplied.
+Stack: React 19, TypeScript, Cloudflare Workers, Hono.js, Groq, Gemini, Claude, Cloudflare KV
+Implementation detail — AI Fallback Chain: Groq → Gemini → Claude
+Implementation detail — Provider Outage: Deterministic local fallback
+Implementation detail — Cache TTL: 24h KV per username
+Implementation detail — Share Cards: Per-user SVG OG images
+Source-backed result: If every configured model provider fails or is absent, generation falls back to a deterministic roast based on contribution statistics.
+Current limitations: Contribution retrieval still depends on GitHub availability. This case study does not establish a latency target or performance under viral traffic.
+Product capture scope: Deployed product. Live GitHub username form and roast entry point.
+Case study: /work/gitblamed
+Architecture walkthrough: /work/gitblamed#gitblamed-walkthrough
+GitHub: https://github.com/vaibhav7506/gitblamed
+Live demo: https://git-blamed-web.vercel.app/
+Evidence — Inspect provider fallback: https://github.com/vaibhav7506/GitBlamed/blob/e56ebb7db54098cd5f7957289040a6366d59d057/apps/worker/src/services/ai.ts#L4-L39
+Evidence — Inspect cache: https://github.com/vaibhav7506/GitBlamed/blob/e56ebb7db54098cd5f7957289040a6366d59d057/apps/worker/src/services/cache.ts#L1-L40
 
-  Career Intelligence Engine (2025)
-    Role: AI Developer
-    Stack: Python, Sentence-Transformers, OpenAI API, LangChain, Cosine Similarity, NLP
-    — Semantically matches resumes to job descriptions via embeddings and cosine similarity
-    — 0–10 compatibility score with section-level breakdown
-    — Company recommendation engine mapping profiles to company personas
-    GitHub: https://github.com/vaibhav7506/ResumeAnalyzer
+5. SentientWallet (Prototype, 2025)
+Purpose: Treasury proposal and validation prototype
+Role: AI Engineer
+A treasury-agent prototype that gathers balances, yields, and market sentiment, then asks Gemini for a structured action proposal. Implemented validation checks protocol, gas, and confidence before a simulation handoff. Blockchain execution remains a stub.
+Problem: An AI treasury proposal needs an explicit validation boundary before it can be treated as an executable action.
+Vaibhav's contribution: I built the perception and proposal flow, protocol/gas/confidence checks, and a dashboard for inspecting the agent's decisions.
+Build duration: Not supplied; the project year is not its build duration.
+Development: Current scope is documented; no completion date is supplied.
+Stack: Python, Gemini, NestJS, Next.js, Prisma, Web3, Action Validation
+Implementation detail — Agent Flow: Perceive → Propose → Validate
+Implementation detail — Gas Check: Above 60 Gwei → WAIT
+Implementation detail — Confidence Check: Below 0.80 → approval required
+Implementation detail — Execution Boundary: Blockchain execution is simulated
+Source-backed result: In the linked public agent, high-gas actions become WAIT and low-confidence proposals require approval instead of continuing unchecked.
+Current limitations: The linked public agent's blockchain execution is a simulation stub. The local UI shown here has no connected wallet or agent; no mainnet execution is claimed.
+Product capture scope: Local development interface. Current local decision ledger with the wallet and agent disconnected.
+Case study: /work/sentientwallet
+Architecture walkthrough: /work/sentientwallet#sentientwallet-walkthrough
+GitHub: https://github.com/vaibhav7506/SentientWallet
+Evidence — Inspect proposal validation: https://github.com/vaibhav7506/SentientWallet/blob/c7d102765496763b815057862a7e63f039e68217/ai-engine/src/agents/sentient_agent.py#L317-L367
+Evidence — Inspect execution boundary: https://github.com/vaibhav7506/SentientWallet/blob/c7d102765496763b815057862a7e63f039e68217/ai-engine/src/agents/sentient_agent.py#L411-L435
 
-  Industrial Sensor Fault Detection (2024)
-    Role: Data Scientist
-    Stack: Python, Scikit-learn, XGBoost, Random Forest, SVM, Pandas, NumPy
-    — ML classification pipeline for multi-class industrial sensor fault detection
-    — Benchmarked Random Forest, XGBoost, SVM with cross-validation and hyperparameter tuning
-    — XGBoost achieved highest precision on minority fault classes
-    GitHub: https://github.com/vaibhav7506/sensor-fault-detection
+6. LLMGuard (Live demo, 2026)
+Purpose: Black-box AI Security Scanner for LLM App Endpoints
+Role: Full Stack AI Security Engineer
+A defensive AI security scanner that tests authorized LLM/chat API endpoints against OWASP-mapped risks like prompt injection, system prompt leakage, sensitive data disclosure, unsafe agency, improper output handling, and unbounded consumption. Includes SSRF protection, secret redaction, concurrent scan execution, Supabase persistence, and audit-ready reports.
+Problem: LLM endpoint reviews need bounded checks, readable findings, and redacted evidence that developers can investigate.
+Vaibhav's contribution: I built the scan workflow, bounded concurrent runner, response detectors, secret redaction, scoring, and report interface.
+Build duration: Not supplied; the project year is not its build duration.
+Development: Current scope is documented; no completion date is supplied.
+Stack: Next.js, TypeScript, Supabase, Vercel, Tailwind CSS, Zod, Recharts, OWASP LLM Top 10, SSRF Protection
+Implementation detail — Scan Execution: Concurrent test runner with Promise.allSettled
+Implementation detail — Security Controls: SSRF blocking, rate limiting, and consent logging
+Implementation detail — Risk Coverage: 6 OWASP-mapped LLM risk categories
+Implementation detail — Evidence Handling: Secrets redacted before display and storage
+Source-backed result: A failed test becomes an explicit error finding while other results remain in the report. Evidence is passed through redaction before presentation.
+Current limitations: Findings are heuristic signals from endpoint behavior, not a security certification. Architecture risks and ambiguous findings require manual review.
+Product capture scope: Product sample report. Public sample report with seeded findings and scores.
+Case study: /work/llmguard
+Architecture walkthrough: /work/llmguard#llmguard-walkthrough
+GitHub: https://github.com/vaibhav7506/LLMGuard
+Live demo: https://llmguardweb.vercel.app/
+Evidence — Inspect scan runner: https://github.com/vaibhav7506/LLMGuard/blob/fc14f004f3a16bea83326c726578716c0574112c/src/lib/scanner/runScan.ts#L63-L102
+Evidence — Inspect redaction: https://github.com/vaibhav7506/LLMGuard/blob/fc14f004f3a16bea83326c726578716c0574112c/src/lib/scanner/redaction.ts#L1-L80
 
-  Real-Time Quiz Application (2025)
-    Role: Full-Stack Developer
-    Stack: Node.js, MongoDB, Socket.io
-    — Real-time multiplayer quiz app supporting 5+ concurrent users
-    — Live leaderboard with instant score updates via Socket.io bidirectional communication
-    GitHub: https://github.com/vaibhav7506
+7. Automation Platform (Live demo, 2024)
+Purpose: Webhook-triggered workflows with ordered, durable action execution
+Role: Full-Stack Developer
+A no-code automation platform with transactional webhook intake, signed QStash delivery, and ordered service adapters. Per-action execution records skip completed side effects on redelivery and flag ambiguous processing states for review.
+Problem: Webhook redelivery can repeat external side effects unless each action's execution state is tracked.
+Vaibhav's contribution: I built workflow intake, transactional run/outbox records, signed QStash processing, ordered action adapters, and per-action completion tracking.
+Build duration: Not supplied; the project year is not its build duration.
+Development: Current scope is documented; no completion date is supplied.
+Stack: Next.js, React, TypeScript, Prisma, PostgreSQL, Upstash QStash
+Implementation detail — Service Adapters: Email, Discord, Slack, Telegram, SMS, Sheets, Solana
+Implementation detail — Execution Model: Ordered QStash stages
+Implementation detail — Intake: Run + outbox in one transaction
+Implementation detail — Redelivery: Per-action claims and completion records
+Source-backed result: A redelivered action already marked COMPLETED skips its adapter. An ambiguous in-progress non-Solana action is held for manual review.
+Current limitations: Actions run in an ordered sequence. Provider credentials are required, and uncertain in-progress states may need manual reconciliation.
+Product capture scope: Deployed landing page. Public landing page. Workflow execution requires sign-in and provider setup.
+Case study: /work/automation-platform
+Architecture walkthrough: /work/automation-platform#automation-platform-walkthrough
+GitHub: https://github.com/vaibhav7506/zapier-project
+Live demo: https://zapier-project.vercel.app/
+Evidence — Inspect redelivery handling: https://github.com/vaibhav7506/zapier-project/blob/608f093ed88d9e110477f6d4b0db7badf49f6872/frontend/app/api/internal/qstash/process-zap/route.ts#L61-L108
+
+8. ExamForge (Live demo, 2026)
+Purpose: AI-Powered Mock Test Platform for Indian Government Exams
+Role: Full Stack Developer
+A mobile-first, no-login practice platform for SSC and RRB exams that generates fresh, deduplicated mock tests on demand via Groq, while keeping timing, scoring, negative marking, and rankings fully server-authoritative. Runs on a fully serverless Cloudflare edge stack — Hono on Workers, D1 with Drizzle, KV, and R2 — with a fingerprint-based pipeline to detect and regenerate repeated or near-duplicate questions.
+Problem: Anonymous exam practice needs trustworthy scoring, timing, and question provenance without requiring a personal account.
+Vaibhav's contribution: I built the exam-selection interface, browser-scoped identity, attempt flow, server scoring, and practice-generation and question-review paths.
+Build duration: Not supplied; the project year is not its build duration.
+Development: Current scope is documented; no completion date is supplied.
+Stack: React 19, TypeScript, Vite, Tailwind CSS, React Router, Hono, Cloudflare Workers, Cloudflare D1, Drizzle ORM, Cloudflare KV, Cloudflare R2, Groq, Zod, Cloudflare Turnstile, Vitest, Playwright
+Implementation detail — Question Integrity: Fingerprint-based dedup across test, history, and content
+Implementation detail — Scoring: Server-authoritative timing, answers, and negative marking
+Implementation detail — Access: Zero-login, anonymous browser-scoped identity
+Implementation detail — Exam Catalogue: SSC MTS, CGL, GD Constable, CHSL, CPO, RRB NTPC
+Implementation + test evidence: The scoring implementation handles correct, incorrect, and unanswered questions, including negative marking and section/topic breakdowns; the repository includes focused tests for these cases.
+Current limitations: Official papers depend on source and answer-key review. Anonymous history belongs to the browser, and AI practice depends on a configured provider.
+Product capture scope: Local interface preview. Local client preview. Production APIs and AI generation are not connected.
+Case study: /work/examforge
+Architecture walkthrough: /work/examforge#examforge-walkthrough
+GitHub: https://github.com/vaibhav7506/ILovePadhai
+Live demo: https://examforge.vaibhav7506.workers.dev/
+Evidence — Inspect scoring tests: https://github.com/vaibhav7506/ILovePadhai/blob/4a13b23ce3a6dadddfb708a8190dae2b0c43a45a/tests/unit/attempt-engine.test.ts#L91-L168
+Evidence — Inspect scoring implementation: https://github.com/vaibhav7506/ILovePadhai/blob/4a13b23ce3a6dadddfb708a8190dae2b0c43a45a/src/shared/scoring.ts#L55-L132
+
+9. TracePilot (In development, 2026)
+Purpose: Autonomous Browser QA Agent with AI-Enriched Bug Reports
+Role: Full Stack QA Automation Engineer
+A browser QA agent that explores a focused user journey with Playwright, records durable evidence (steps, console errors, network failures, screenshots), and turns failures into an evidence-backed report with exportable regression tests. The deterministic runner works standalone; a provider-agnostic AI gateway (OpenAI, Groq, Anthropic, Gemini) with encrypted BYOK optionally enriches analysis and test generation. Currently in active development — full app (auth, dashboard, runner, AI gateway, test export) is built and running locally, not yet deployed.
+Problem: Browser QA needs a readable trace and reproducible regression tests, even when AI enrichment is unavailable.
+Vaibhav's contribution: I built the Playwright journey runner, evidence/report interface, deterministic test exporter, and optional provider gateway with encrypted user keys.
+Build duration: Not supplied; the project year is not its build duration.
+Development: Ongoing
+Stack: Next.js 15, React 18, TypeScript, PostgreSQL, Prisma, Playwright, Zod, AES-256-GCM, Three.js, GSAP
+Implementation detail — Evidence Capture: Steps, console errors, network failures, screenshots
+Implementation detail — AI Providers: 4-provider gateway with encrypted BYOK
+Implementation detail — Fallback Behavior: Deterministic test generation with zero AI dependency
+Implementation detail — Safety Policy: Same-domain, step-bounded, destructive-action blocked
+Implementation detail — Data Model: 8 Prisma migrations across auth, runs, AI analysis, BYOK
+Source-backed result: The fallback generator produces Playwright test files from captured run data without an AI call. A credential-free sample report demonstrates the report interface.
+Current limitations: Currently a local development project. The sample run uses fixture data; production browser execution still needs an isolated worker and shared artifact storage.
+Product capture scope: Local product · sample report. Local recruiter demo with fixture findings, scores, and run duration.
+Case study: /work/tracepilot
+Architecture walkthrough: /work/tracepilot#tracepilot-walkthrough
+GitHub: https://github.com/vaibhav7506/TracePilot
+Evidence — Inspect fallback exporter: https://github.com/vaibhav7506/TracePilot/blob/660fd08515662e7332327a4c8f120399d8fbeb84/src/lib/test-generation/fallback.ts#L36-L98
+Evidence — Inspect sample report: https://github.com/vaibhav7506/TracePilot/blob/660fd08515662e7332327a4c8f120399d8fbeb84/src/app/demo/report/page.tsx#L1-L13
+
+IMPLEMENTATION WORKFLOWS:
+
+RunbookOS
+SIGNAL: Signed incident sources are validated, redacted, normalized, and grouped using delivery idempotency and event fingerprints. A received signal supplies context rather than permission to execute an action.
+Implementation source: https://github.com/vaibhav7506/Runbookos/blob/main/README.md#incident-data-flow
+EVIDENCE: The control plane requests bounded diagnostic workflows. n8n collects evidence such as deployment changes, logs, and health checks; Java retains authority over tenant access and execution state.
+Implementation source: https://github.com/vaibhav7506/Runbookos/blob/main/docs/architecture/workflow-boundaries.md
+ANALYSIS: Structured analysis must have a summary, valid confidence, and recommendations. Non-hypothesis claims need citations, and cited evidence identifiers must belong to the available evidence set. Passing validation does not prove a diagnosis is correct.
+Implementation source: https://github.com/vaibhav7506/Runbookos/blob/main/services/control-plane/src/main/java/com/vaibhav/runbookos/analysis/AnalysisQualityValidator.java
+POLICY: The Java policy engine checks actor role, environment, action risk, and Demo Mode. It denies prohibited actions regardless of configuration and denies high-risk actions in Demo Mode. Default reversible actions require human approval.
+Implementation source: https://github.com/vaibhav7506/Runbookos/blob/main/services/control-plane/src/main/java/com/vaibhav/runbookos/policy/PolicyEngine.java
+APPROVAL: Approval requests have an expiry and eligibility rules. Decisions are recorded per approver; duplicate decisions are rejected. Elevated actions require distinct eligible approvers and cannot be self-approved by the requester.
+Implementation source: https://github.com/vaibhav7506/Runbookos/blob/main/services/control-plane/src/main/java/com/vaibhav/runbookos/approval/ApprovalService.java
+DISPATCH: The outbox processor signs workflow dispatches and issues an execution token scoped to the organization, execution, nonce, and allowed action identifiers. Resilience4j retry, circuit breaker, and bulkhead policies wrap the network operation.
+Implementation source: https://github.com/vaibhav7506/Runbookos/blob/main/services/control-plane/src/main/java/com/vaibhav/runbookos/workflow/OutboxProcessor.java
+AUDIT: Audit events capture the organization, actor, resource, outcome, and correlation context. The service uses a separate transaction so a rejected operation can roll back while its denial record survives.
+Implementation source: https://github.com/vaibhav7506/Runbookos/blob/main/services/control-plane/src/main/java/com/vaibhav/runbookos/audit/AuditService.java
+Walkthrough boundary: Illustrative execution trace based on the public implementation. This walkthrough sends no requests and performs no remediation. RunbookOS Demo Mode uses deterministic analysis and simulated safe actions.
+
+CodeShift AI
+ANALYZE: Detect framework, package manager, module system, scripts, and migration risks. Recommend a contained first scope without executing repository code.
+Implementation source: https://github.com/vaibhav7506/codeshift-ai/blob/main/packages/analyzer/src/index.ts
+PLAN: Choose a repository-relative scope and build a deterministic JavaScript-to-TypeScript plan. Planning records the proposed steps; source files stay unchanged.
+Implementation source: https://github.com/vaibhav7506/codeshift-ai/blob/main/packages/migrator/src/index.ts
+MIGRATE: Rename eligible JS/JSX files, convert straightforward CommonJS syntax, and prepare tsconfig.json. Complex CommonJS stays unchanged with warnings. Optional AI adds advisory notes after the deterministic migration.
+Implementation source: https://github.com/vaibhav7506/codeshift-ai/blob/main/packages/migrator/src/migrate.ts
+VALIDATE: Run existing test, build, typecheck, and lint scripts. Record missing scripts as SKIPPED, capture failures, and save structured results alongside the command logs.
+Implementation source: https://github.com/vaibhav7506/codeshift-ai/blob/main/apps/cli/src/validation.ts
+REVIEW: Inspect the diff, warnings, and validation artifacts before choosing the PR workflow. The migration command itself never commits, pushes, or opens a pull request.
+Implementation source: https://github.com/vaibhav7506/codeshift-ai/blob/main/apps/cli/src/github-pr.ts
+APPROVAL: The PR command previews the migration, then asks separately before creating a branch, committing migration files, pushing, and opening a GitHub pull request. Declining a later step preserves earlier approved local work.
+Implementation source: https://github.com/vaibhav7506/codeshift-ai/blob/main/apps/cli/src/github-pr.ts
+
+GitBlamed
+HANDLE: The roast route trims and validates the GitHub username before looking up any cached result.
+Implementation source: https://github.com/vaibhav7506/gitblamed/blob/main/apps/worker/src/routes/roast.ts
+KV CACHE: Read a lowercase username cache key. A fresh cached roast returns immediately; a read failure or stale entry falls through to generation.
+Implementation source: https://github.com/vaibhav7506/gitblamed/blob/main/apps/worker/src/services/cache.ts
+GITHUB: On a cache miss, fetch the contribution calendar before generating a roast. Fetch failures return an error rather than invented activity.
+Implementation source: https://github.com/vaibhav7506/gitblamed/blob/main/apps/worker/src/routes/roast.ts
+PARSE: Parse the calendar into heatmap days and contribution statistics. Those statistics become the model prompt's input.
+Implementation source: https://github.com/vaibhav7506/gitblamed/blob/main/apps/worker/src/routes/roast.ts
+GENERATE: Try configured providers sequentially. If all fail or are absent, generate a deterministic local roast. Zero contributions have a dedicated response.
+Implementation source: https://github.com/vaibhav7506/gitblamed/blob/main/apps/worker/src/services/ai.ts
+STORE: Store the completed response with a one-day TTL. KV write failures do not discard the response already generated for the user.
+Implementation source: https://github.com/vaibhav7506/gitblamed/blob/main/apps/worker/src/services/cache.ts
+SHARE: The share route renders an image from cached or generated data. The username page supplies per-user social metadata and redirects to the app.
+Implementation source: https://github.com/vaibhav7506/gitblamed/blob/main/apps/worker/src/routes/roast.ts
+Walkthrough boundary: Illustrative activity only. No GitHub account or model API is queried by this walkthrough.
+
+SentientWallet
+PERCEIVE: The perception cycle gathers wallet balance, yield opportunities, and market sentiment for an active user.
+Implementation source: https://github.com/vaibhav7506/SentientWallet/blob/main/ai-engine/src/agents/sentient_agent.py
+CONTEXT: Build a context object with the user, balance, top five yields, sentiment, and timestamp.
+Implementation source: https://github.com/vaibhav7506/SentientWallet/blob/main/ai-engine/src/agents/sentient_agent.py
+GEMINI: Gemini generates a JSON action proposal. Prompt constraints guide the model; they should not be confused with enforced validation rules.
+Implementation source: https://github.com/vaibhav7506/SentientWallet/blob/main/ai-engine/src/agents/sentient_agent.py
+PARSE: Extract JSON from a plain or fenced model response. Parse or generation failures return a WAIT action with approval required.
+Implementation source: https://github.com/vaibhav7506/SentientWallet/blob/main/ai-engine/src/agents/sentient_agent.py
+VALIDATE: The perception path checks the protocol whitelist, rejects non-WAIT actions above 60 Gwei, and requires approval below 0.80 confidence. The 15% swap limit is present in configuration and prompts, but not enforced by this validator.
+Implementation source: https://github.com/vaibhav7506/SentientWallet/blob/main/ai-engine/src/agents/sentient_agent.py
+HANDOFF: The current execute_action implementation sleeps to simulate execution and contains a TODO for actual blockchain execution. This view ends at the proposal boundary.
+Implementation source: https://github.com/vaibhav7506/SentientWallet/blob/main/ai-engine/src/agents/sentient_agent.py
+Walkthrough boundary: Blockchain execution is a simulation stub in the reviewed source. This demo never connects a wallet, signs, or sends a transaction.
+
+LLMGuard
+CONFIGURE: Zod normalizes the endpoint, POST method, JSON headers, request template, selected categories, and authorization confirmation. The body template must include the prompt placeholder.
+Implementation source: https://github.com/vaibhav7506/LLMGuard/blob/main/src/lib/validators/scan.ts
+SSRF GATE: Check the protocol, hostname, literal IP, and resolved addresses before each request. Resolve twice, reject unsafe destinations, restrict request headers, and reject redirects. The source documents a remaining DNS race; native fetch is not IP-pinned.
+Implementation source: https://github.com/vaibhav7506/LLMGuard/blob/main/src/lib/scanner/ssrf.ts
+TEST SUITE: Select safe static tests from the chosen categories. The default limit is 10, the hard maximum is 12, and each request has an 8-second timeout. Promise.allSettled keeps individual failures from discarding the remaining findings.
+Implementation source: https://github.com/vaibhav7506/LLMGuard/blob/main/src/lib/scanner/runScan.ts
+DETECT: Inspect response text for boundary failures, leakage, sensitive patterns, unsafe action claims, output handling, and consumption signals. Findings carry status, severity, confidence, and rationale. This version does not use an LLM judge.
+Implementation source: https://github.com/vaibhav7506/LLMGuard/blob/main/src/lib/scanner/detectors.ts
+REDACT: Mask recognized credentials, authorization values, JWTs, private keys, database URLs, email addresses, and phone numbers. Findings retain redacted evidence; report exports apply redaction again.
+Implementation source: https://github.com/vaibhav7506/LLMGuard/blob/main/src/lib/scanner/redaction.ts
+REPORT: Start at 100 and deduct points by finding status and severity. All-error scans are Not Scored. Store scans and consent logs in Supabase when configured, with an in-memory fallback, and provide redacted JSON / Markdown exports.
+Implementation source: https://github.com/vaibhav7506/LLMGuard/blob/main/src/lib/scanner/scoring.ts
+
+Automation Platform
+WEBHOOK: Find the workflow by ID. Missing workflows return 404, while disabled workflows are ignored.
+Implementation source: https://github.com/vaibhav7506/zapier-project/blob/main/frontend/app/hooks/catch/[userId]/[zapId]/route.ts
+RUN + OUTBOX: Create the run and outbox record in one database transaction. Publish stage zero, then delete the outbox record after publishing succeeds.
+Implementation source: https://github.com/vaibhav7506/zapier-project/blob/main/frontend/app/hooks/catch/[userId]/[zapId]/route.ts
+QSTASH: Publish JSON with five configured retries. The processor verifies the Upstash signature with current and next signing keys before processing the message.
+Implementation source: https://github.com/vaibhav7506/zapier-project/blob/main/frontend/lib/server/qstash.ts
+CLAIM: Load actions ordered by sortingOrder and inspect the run/action execution record. Completed actions skip their side effect; ambiguous in-progress non-Solana actions request manual review.
+Implementation source: https://github.com/vaibhav7506/zapier-project/blob/main/frontend/app/api/internal/qstash/process-zap/route.ts
+ADAPTER: Use the action type to resolve metadata and invoke its service adapter. The route includes email, Discord, Slack, Telegram, SMS, Sheets, and prepared Solana transfers.
+Implementation source: https://github.com/vaibhav7506/zapier-project/blob/main/frontend/app/api/internal/qstash/process-zap/route.ts
+NEXT STAGE: Mark the action complete and publish the next ordered stage unless it was already published or this was the last action. This code path is a sequence, not parallel DAG scheduling.
+Implementation source: https://github.com/vaibhav7506/zapier-project/blob/main/frontend/app/api/internal/qstash/process-zap/route.ts
+Walkthrough boundary: This animation follows the current QStash route, not the older Kafka README diagram. No external action or transfer is performed.
+
+ExamForge
+CONFIGURE: The learner selects an exam, scope, language, difficulty, question count, and session settings without needing an account.
+Implementation source: https://github.com/vaibhav7506/ILovePadhai/blob/main/README.md
+GENERATE: The assessment route requests structured batches through Groq, validates the response schema, and manages model availability and provider cooldowns.
+Implementation source: https://github.com/vaibhav7506/ILovePadhai/blob/main/src/server/ai-assessment-routes.ts
+DEDUP: Compare question fingerprints and normalized token similarity with existing and candidate questions. A duplicate candidate is excluded before publishing.
+Implementation source: https://github.com/vaibhav7506/ILovePadhai/blob/main/src/server/ai-assessment-routes.ts
+VERIFY: Candidates pass deterministic or independent model verification before being inserted as published questions with verification metadata.
+Implementation source: https://github.com/vaibhav7506/ILovePadhai/blob/main/src/server/ai-assessment-routes.ts
+ATTEMPT: The attempt route stores start and expiry times and issues a signed attempt token. Server checks enforce the attempt window when answers are saved or submitted.
+Implementation source: https://github.com/vaibhav7506/ILovePadhai/blob/main/src/server/attempt-routes.ts
+SCORE: The server calculates marks and negative marking from the saved attempt and authoritative answers rather than trusting a client-supplied score.
+Implementation source: https://github.com/vaibhav7506/ILovePadhai/blob/main/src/server/attempt-routes.ts
+IMPROVE: Submission updates result records and practice signals used for topic mastery and learner progress. Anonymous identity keeps the flow accessible without account creation.
+Implementation source: https://github.com/vaibhav7506/ILovePadhai/blob/main/src/server/attempt-routes.ts
+Walkthrough boundary: Questions, timings, and results here are illustrative. This walkthrough neither calls Groq nor creates a learner attempt.
+
+TracePilot
+POLICY: The runner uses configured navigation, step, runtime, same-domain, evidence, and destructive-action limits. Text-based action checks are a safety boundary, not a guarantee against all side effects.
+Implementation source: https://github.com/vaibhav7506/TracePilot/blob/main/src/lib/runner/safety.ts
+EXPLORE: Launch Chromium and explore a focused user journey. The reviewed build executes inline for local development; the source recommends a long-lived worker for production browser jobs.
+Implementation source: https://github.com/vaibhav7506/TracePilot/blob/main/src/lib/runner/browser-runner.ts
+EVIDENCE: Persist browser steps and findings as execution proceeds, capturing console errors, network failures, URLs, and screenshot references. Request-scoped login credentials are redacted.
+Implementation source: https://github.com/vaibhav7506/TracePilot/blob/main/src/lib/runner/browser-runner.ts
+AI ANALYSIS: Optional planning and analysis go through the provider gateway. Evidence and deterministic QA findings are retained when enrichment is absent or fails.
+Implementation source: https://github.com/vaibhav7506/TracePilot/blob/main/src/lib/runner/browser-runner.ts
+TESTS: Filter unsafe steps and findings. Accept AI-generated tests only if safety checks pass; otherwise produce deterministic fallback tests from observed routes and findings.
+Implementation source: https://github.com/vaibhav7506/TracePilot/blob/main/src/lib/test-generation/generate-run-tests.ts
+EXPORT: Save generated test records for preview and export. Test files use runtime environment variables for credentials and must be reviewed before use.
+Implementation source: https://github.com/vaibhav7506/TracePilot/blob/main/src/lib/test-generation/fallback.ts
+Walkthrough boundary: A local-development product walkthrough. No browser job, provider call, or generated test is executed by this animation.
 
 STRENGTHS:
   Agent architecture, production reliability, observability, fallback chains,
@@ -113,8 +377,8 @@ STRENGTHS:
   cost-aware LLM orchestration, full-stack systems
 
 ACHIEVEMENTS:
-  — 340+ LeetCode problems solved (strong DSA and problem-solving)
-  — SentientWallet: one of the first autonomous AI Agent CFOs for DAO treasury management
+  — LeetCode profile: https://leetcode.com/u/vaibhav7506/ (current count not supplied)
+  — SentientWallet prototype: proposal validation before simulated execution
   — Certifications: Programming using Java (Infosys), Backend REST API with Node.js (Udemy), NoSQL (Infosys)
 
 POSITIONS_OF_RESPONSIBILITY:

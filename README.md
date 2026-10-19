@@ -27,7 +27,7 @@ It presents projects through detailed case studies instead of simple screenshots
 - Interactive Mission Control-inspired interface
 - Keyboard-accessible command palette
 - Detailed project case-study routes
-- Live project metrics and architecture highlights
+- Project capabilities, source evidence, and public GitHub activity
 - Dedicated `/now` page for current work and learning
 - Motion-driven transitions and scroll interactions
 - Three.js-powered visual elements
@@ -36,16 +36,19 @@ It presents projects through detailed case studies instead of simple screenshots
 
 ---
 
-## Featured Engineering Projects
+## Project Catalog
 
 | Project | What it does | Core technologies | Links |
 |---|---|---|---|
+| **RunbookOS — Active** | Human-governed incident response with evidence-linked AI analysis, Java policy enforcement, human approvals, and signed n8n orchestration. Demo Mode uses simulated safe actions. | Java 21, Spring Boot, Next.js, PostgreSQL, Redis, n8n, Docker | [Live demo](https://runbookos-ten.vercel.app/) · [Source](https://github.com/vaibhav7506/Runbookos) |
 | **CodeShift AI** | Review-first JavaScript-to-TypeScript migration workspace that analyzes repositories, creates scoped migration plans, performs conservative local transformations, validates changes, and opens pull requests only after human approval. | Next.js, TypeScript, Node.js, npm Workspaces, GitHub API, BYOK AI | [Live](https://codeshiftweb.vercel.app/) · [Source](https://github.com/vaibhav7506/codeshift-ai) |
-| **LLMGuard Lab** | Defensive black-box security scanner for authorized LLM endpoints with OWASP-mapped checks, SSRF protection, evidence redaction, consent logging, and audit-ready reports. | Next.js, TypeScript, Supabase, Zod, Recharts, OWASP LLM Top 10 | [Live](https://llmguardweb.vercel.app/) · [Source](https://github.com/vaibhav7506/LLMGuard) |
 | **LoopOS** | Observability-first platform for generator-evaluator loops with weighted scoring, anomaly detection, cost telemetry, and Durable Object-based execution. | Cloudflare Workers, Durable Objects, Hono, D1, AI Gateway, TypeScript | [Live](https://loopos-web.pages.dev/) · [Source](https://github.com/vaibhav7506/LoopOS) |
 | **GitBlamed** | Edge-native GitHub activity analyzer that generates AI-powered roasts using a multi-provider fallback chain and cached, shareable OG cards. | React, TypeScript, Cloudflare Workers, Hono, Groq, Gemini, Claude, KV | [Live](https://git-blamed-web.vercel.app/) · [Source](https://github.com/vaibhav7506/gitblamed) |
-| **SentientWallet** | Autonomous AI treasury agent that combines LLM-based decisions with deterministic risk guardrails and plain-language audit trails. | Python, LangChain, OpenAI API, Web3, real-time market data | [Source](https://github.com/vaibhav7506/SentientWallet) |
-| **Automation Platform** | Zapier-style workflow system with DAG execution, parallel processing, typed API adapters, and encrypted workspace credentials. | React, Node.js, Express, MongoDB, Socket.io | [Live](https://zapier-project.vercel.app/) · [GitHub](https://github.com/vaibhav7506) |
+| **SentientWallet — Prototype** | Treasury proposals with Gemini and application-level protocol, gas, and confidence checks. The public execution method is simulated. | Python, Gemini, Next.js, Prisma, Web3 | [Source](https://github.com/vaibhav7506/SentientWallet) |
+| **LLMGuard Lab** | Defensive black-box security scanner for authorized LLM endpoints with OWASP-mapped checks, SSRF protection, evidence redaction, consent logging, and audit-ready reports. | Next.js, TypeScript, Supabase, Zod, Recharts, OWASP LLM Top 10 | [Live](https://llmguardweb.vercel.app/) · [Source](https://github.com/vaibhav7506/LLMGuard) |
+| **Automation Platform** | Webhook-triggered workflows with transactional run/outbox intake, signed QStash delivery, ordered actions, and per-action completion records. | Next.js, TypeScript, Prisma, PostgreSQL, QStash | [Live demo](https://zapier-project.vercel.app/) · [Source](https://github.com/vaibhav7506/zapier-project) |
+| **ExamForge** | Anonymous exam practice with server-side scoring, question review, and configurable AI practice. | React, TypeScript, Cloudflare Workers, Hono, D1, Drizzle | [Live demo](https://examforge.vaibhav7506.workers.dev/) · [Source](https://github.com/vaibhav7506/ILovePadhai) |
+| **TracePilot — In development** | A local browser QA project with captured run evidence, optional AI enrichment, and Playwright test export. | Next.js, TypeScript, Playwright, Prisma, PostgreSQL | [Source](https://github.com/vaibhav7506/TracePilot) |
 
 ---
 

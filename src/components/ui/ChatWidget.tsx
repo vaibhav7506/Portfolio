@@ -1,6 +1,11 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
+import { AnimatePresence, motion } from "framer-motion"
+import { usePathname } from "next/navigation"
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion"
+import { projects } from "@/lib/projects"
+import { AssistantMessageContent } from "./AssistantMessageContent"
 
 interface Message {
   role: "user" | "assistant"
@@ -8,13 +13,22 @@ interface Message {
 }
 
 const SUGGESTED_QUESTIONS = [
-  "What's your experience with Cloudflare Workers?",
-  "Tell me about LoopOS",
+  "Tell me about RunbookOS",
+  "How does CodeShift AI work?",
+  "Compare RunbookOS and LoopOS",
   "Are you available for full-time roles?",
-  "What makes you different from other candidates?",
 ]
 
 export function ChatWidget() {
+  const reducedMotion = usePrefersReducedMotion()
+  const pathname = usePathname()
+  const currentProject = projects.find((project) => pathname === `/work/${project.slug}`)
+  const suggestedQuestions = currentProject ? [
+    `Tell me about ${currentProject.title}`,
+    `What did Vaibhav build for ${currentProject.title}?`,
+    `What are ${currentProject.title}'s current limitations?`,
+    `Where are ${currentProject.title}'s demo and GitHub links?`,
+  ] : SUGGESTED_QUESTIONS
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -29,9 +43,19 @@ export function ChatWidget() {
   const [hasDragged, setHasDragged] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const triggerRef = useRef<HTMLButtonElement>(null)
   const dragRef = useRef<HTMLDivElement>(null)
   const isDragging = useRef(false)
   const dragOffset = useRef({ x: 0, y: 0 })
+  const contentMotion = {
+    closed: { opacity: 0, y: reducedMotion ? 0 : 8 },
+    open: { opacity: 1, y: 0 },
+  }
+
+  const closeChat = () => {
+    setIsOpen(false)
+    triggerRef.current?.focus({ preventScroll: true })
+  }
 
   useEffect(() => {
     const el = dragRef.current
@@ -82,7 +106,7 @@ export function ChatWidget() {
   useEffect(() => {
     if (isOpen) {
       bottomRef.current?.scrollIntoView({ behavior: "smooth" })
-      inputRef.current?.focus()
+      inputRef.current?.focus({ preventScroll: true })
     }
   }, [isOpen, messages])
 
@@ -101,6 +125,7 @@ export function ChatWidget() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          currentProjectSlug: currentProject?.slug,
           messages: newMessages.map((m) => ({
             role: m.role,
             content: m.content,
@@ -135,33 +160,69 @@ export function ChatWidget() {
         }
         className="cursor-grab active:cursor-grabbing"
       >
-        <button
+        <motion.button
+          ref={triggerRef}
           onClick={() => {
-            if (!hasDragged) setIsOpen((v) => !v)
+            if (!hasDragged) {
+              if (isOpen) closeChat()
+              else setIsOpen(true)
+            }
           }}
           aria-label={isOpen ? "Close chat" : "Ask Vaibhav anything"}
-          className="w-12 h-12 rounded-full bg-accent text-bg flex items-center justify-center shadow-lg hover:bg-accent/90 hover:scale-105 active:scale-95 transition-all duration-150 font-mono text-sm font-bold"
+          aria-expanded={isOpen}
+          aria-controls={isOpen ? "portfolio-assistant" : undefined}
+          whileHover={reducedMotion ? undefined : { scale: 1.06 }}
+          whileTap={reducedMotion ? undefined : { scale: 0.9 }}
+          className="relative w-12 h-12 rounded-full bg-accent text-bg flex items-center justify-center shadow-lg hover:bg-accent/90 transition-colors duration-150 font-mono text-sm font-bold"
         >
-          {isOpen ? "✕" : "AI"}
-        </button>
+          {isOpen && !reducedMotion && <motion.span
+            aria-hidden="true"
+            className="absolute inset-0 rounded-full border border-accent pointer-events-none"
+            initial={{ scale: 1, opacity: 0.7 }}
+            animate={{ scale: 1.8, opacity: 0 }}
+            transition={{ duration: 0.45, ease: "easeOut" }}
+          />}
+          <AnimatePresence initial={false} mode="wait">
+            <motion.span key={isOpen ? "close" : "ai"} aria-hidden="true"
+              initial={{ opacity: 0, rotate: reducedMotion ? 0 : -60, scale: reducedMotion ? 1 : 0.7 }}
+              animate={{ opacity: 1, rotate: 0, scale: 1 }}
+              exit={{ opacity: 0, rotate: reducedMotion ? 0 : 60, scale: reducedMotion ? 1 : 0.7 }}
+              transition={{ duration: reducedMotion ? 0 : 0.12 }}
+            >{isOpen ? "✕" : "AI"}</motion.span>
+          </AnimatePresence>
+        </motion.button>
       </div>
 
       {/* Chat panel */}
+      <AnimatePresence>
       {isOpen && (
-        <div className="fixed bottom-20 right-6 z-[199] w-[340px] max-h-[520px] flex flex-col border border-border bg-[#0F1318] rounded-xl shadow-2xl overflow-hidden font-mono text-xs">
+        <motion.div id="portfolio-assistant" role="dialog" aria-label="Vaibhav's portfolio assistant"
+          initial="closed" animate="open" exit="closed"
+          variants={{
+            closed: { opacity: 0, scale: reducedMotion ? 1 : 0.9, y: reducedMotion ? 0 : 20,
+              transition: { duration: reducedMotion ? 0 : 0.16 } },
+            open: { opacity: 1, scale: 1, y: 0,
+              transition: { type: "spring", stiffness: 380, damping: 28,
+                ...(reducedMotion ? { type: "tween", duration: 0 } : {}),
+                staggerChildren: reducedMotion ? 0 : 0.055, delayChildren: reducedMotion ? 0 : 0.06 } },
+          }}
+          style={{ transformOrigin: "bottom right" }}
+          onKeyDown={(event) => { if (event.key === "Escape") { event.stopPropagation(); closeChat() } }}
+          className="fixed bottom-20 right-4 sm:right-6 z-[199] w-[340px] max-w-[calc(100vw-2rem)] max-h-[min(520px,calc(100dvh-104px))] flex flex-col border border-border bg-[#0F1318] rounded-xl shadow-2xl overflow-hidden font-mono text-xs">
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-surface">
+          <motion.div variants={contentMotion} transition={{ duration: reducedMotion ? 0 : 0.18 }} className="flex shrink-0 items-center justify-between px-4 py-3 border-b border-border bg-surface">
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
               <span className="text-text font-bold text-[11px] uppercase tracking-wider">
                 Ask Vaibhav Anything
               </span>
             </div>
-            
-          </div>
+            <button type="button" aria-label="Close assistant" onClick={closeChat}
+              className="flex h-7 w-7 items-center justify-center rounded text-text-2 hover:text-accent hover:bg-accent/10 transition-colors cursor-pointer">✕</button>
+          </motion.div>
 
           {/* Messages */}
-          <div className="flex-grow overflow-y-auto px-4 py-3 space-y-3 scrollbar-none">
+          <motion.div variants={contentMotion} transition={{ duration: reducedMotion ? 0 : 0.18 }} className="min-h-0 flex-grow overflow-y-auto px-4 py-3 space-y-3 scrollbar-none">
             {messages.map((msg, i) => (
               <div
                 key={i}
@@ -172,9 +233,9 @@ export function ChatWidget() {
                     msg.role === "user"
                       ? "bg-accent text-bg font-semibold"
                       : "bg-elevated border border-border/50 text-text-2"
-                  }`}
+                  } whitespace-pre-wrap break-words`}
                 >
-                  {msg.content}
+                  {msg.role === "assistant" ? <AssistantMessageContent content={msg.content} /> : msg.content}
                 </div>
               </div>
             ))}
@@ -182,7 +243,7 @@ export function ChatWidget() {
             {/* Suggested questions */}
             {showSuggestions && messages.length === 1 && (
               <div className="space-y-1.5 pt-1">
-                {SUGGESTED_QUESTIONS.map((q) => (
+                {suggestedQuestions.map((q) => (
                   <button
                     key={q}
                     onClick={() => send(q)}
@@ -206,10 +267,10 @@ export function ChatWidget() {
             )}
 
             <div ref={bottomRef} />
-          </div>
+          </motion.div>
 
           {/* Input */}
-          <div className="border-t border-border px-3 py-2.5 flex items-center gap-2 bg-surface">
+          <motion.div variants={contentMotion} transition={{ duration: reducedMotion ? 0 : 0.18 }} className="shrink-0 border-t border-border px-3 py-2.5 flex items-center gap-2 bg-surface">
             <input
               ref={inputRef}
               type="text"
@@ -217,7 +278,8 @@ export function ChatWidget() {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && send(input)}
               placeholder="Ask about projects, stack, availability..."
-              className="flex-grow bg-transparent text-text placeholder:text-text-3 text-[11px] outline-none"
+              aria-label="Message the portfolio assistant"
+              className="min-w-0 flex-grow bg-transparent text-text placeholder:text-text-3 text-[11px] outline-none"
               disabled={isLoading}
             />
             <button
@@ -227,9 +289,10 @@ export function ChatWidget() {
             >
               SEND
             </button>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
+      </AnimatePresence>
     </>
   )
 }
