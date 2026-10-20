@@ -1,7 +1,5 @@
 .header { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 22px; margin-bottom: 34px; }
 .description { max-width: 620px; color: var(--text-2); font-size: 14px; line-height: 1.8; margin-top: 12px; }
-.profile { display: inline-flex; align-items: center; gap: 8px; padding: 10px 13px; border: 1px solid #2f4c6b; background: #142236; border-radius: 6px; color: #9bc9fb; font: 600 11px var(--font-mono), monospace; }
-.profile:hover { border-color: #74b8ff; background: #18304a; }
 .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: stretch; }
 .card { background: var(--bg-surface, #101720); border: 1px solid var(--border); border-radius: 9px; padding: 24px; min-width: 0; box-shadow: 0 5px 24px #0002; }
 .feed { display: flex; flex-direction: column; }

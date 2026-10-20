@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, MouseEvent, ReactNode } from "react"
+import { useRef, type MouseEvent, type MouseEventHandler, type ReactNode } from "react"
 import gsap from "gsap"
 
 interface MagneticButtonProps {
@@ -9,6 +9,8 @@ interface MagneticButtonProps {
   className?: string
   target?: string
   rel?: string
+  onClick?: MouseEventHandler<HTMLAnchorElement>
+  "aria-busy"?: boolean
   /** Max pixel offset the button can be pulled toward the cursor. */
   strength?: number
   /** Radius (px) around the button center where the magnetic pull activates. */
@@ -27,6 +29,8 @@ export function MagneticButton({
   className,
   target,
   rel,
+  onClick,
+  "aria-busy": ariaBusy,
   strength = 16,
   radius = 70,
 }: MagneticButtonProps) {
@@ -86,6 +90,8 @@ export function MagneticButton({
       href={href}
       target={target}
       rel={rel}
+      onClick={onClick}
+      aria-busy={ariaBusy}
       className={className}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}

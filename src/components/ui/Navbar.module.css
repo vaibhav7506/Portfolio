@@ -14,6 +14,10 @@
   color: var(--accent);
   text-shadow: 0 0 16px rgba(77, 163, 255, .35);
 }
+.link[aria-busy="true"], .mobileLink[aria-busy="true"] {
+  color: var(--accent);
+  background: #4da3ff0c;
+}
 
 @media (hover: hover) and (pointer: fine) {
   .link:hover {

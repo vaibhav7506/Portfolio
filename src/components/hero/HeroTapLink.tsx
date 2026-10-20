@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, type ComponentPropsWithoutRef, type PointerEvent } from "react"
+import { useAnimatedNavigation } from "@/hooks/useAnimatedNavigation"
 import styles from "./PortraitHero.module.css"
 
 type TapEffect = "projects" | "resume" | "runbook" | "code" | "loop"
@@ -8,6 +9,7 @@ type TapEffect = "projects" | "resume" | "runbook" | "code" | "loop"
 export function HeroTapLink({ effect, children, ...props }: ComponentPropsWithoutRef<"a"> & { effect: TapEffect }) {
   const animations = useRef(new Set<Animation>())
   const touch = useRef<{ id: number; x: number; y: number } | null>(null)
+  const { opening, activate } = useAnimatedNavigation(480)
 
   const cancelFeedback = () => {
     animations.current.forEach(animation => animation.cancel())
@@ -29,11 +31,8 @@ export function HeroTapLink({ effect, children, ...props }: ComponentPropsWithou
     }
   }, [])
 
-  const startFeedback = (event: PointerEvent<HTMLAnchorElement>) => {
-    if (event.pointerType === "mouse" || !event.isPrimary || event.button !== 0) return
+  const playFeedback = (link: HTMLAnchorElement) => {
     cancelFeedback()
-    touch.current = { id: event.pointerId, x: event.clientX, y: event.clientY }
-    const link = event.currentTarget
     const content = link.querySelector<HTMLElement>("[data-tap-content]")!
     const surface = link.querySelector<HTMLElement>("[data-tap-surface]")!
     const arrow = content.querySelector<SVGElement>("svg")!
@@ -104,11 +103,24 @@ export function HeroTapLink({ effect, children, ...props }: ComponentPropsWithou
     }
   }
 
+  const startFeedback = (event: PointerEvent<HTMLAnchorElement>) => {
+    if (event.pointerType === "mouse" || !event.isPrimary || event.button !== 0 || effect === "resume") return
+    playFeedback(event.currentTarget)
+    touch.current = { id: event.pointerId, x: event.clientX, y: event.clientY }
+  }
+
   return (
-    <a {...props} data-tap-effect={effect} onPointerDown={startFeedback} onPointerMove={event => {
+    <a {...props} data-tap-effect={effect} aria-busy={effect === "resume" ? opening : props["aria-busy"]}
+      onClick={event => {
+        props.onClick?.(event)
+        if (effect === "resume") {
+          const link = event.currentTarget
+          activate(event, () => playFeedback(link))
+        }
+      }} onPointerDown={startFeedback} onPointerMove={event => {
       const start = touch.current
       if (start?.id === event.pointerId && Math.hypot(event.clientX - start.x, event.clientY - start.y) > 12) cancelFeedback()
-    }} onPointerUp={() => { touch.current = null }} onPointerCancel={cancelFeedback}>
+    }} onPointerUp={() => { touch.current = null }} onPointerCancel={() => { if (!opening) cancelFeedback() }}>
       <span className={styles.tapSurface} data-tap-surface aria-hidden="true" />
       <span className={styles.tapContent} data-tap-content>{children}</span>
     </a>

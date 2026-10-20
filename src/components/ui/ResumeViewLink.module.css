@@ -19,6 +19,7 @@
 .link:hover, .link:focus-visible { border-color: var(--accent); color: #badaff; box-shadow: 0 0 0 3px #4da3ff12; }
 .link:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 .link:active { background: #172d44; }
+.link[data-opening=true] { border-color: var(--accent); color: #d8ecff; background: #172d44; box-shadow: 0 0 0 3px #4da3ff12; }
 .arrow { color: var(--accent); transition: transform 180ms ease; }
 .link:hover .arrow, .link:focus-visible .arrow { transform: translate(2px, -2px); }
 .sweep { position: absolute; inset: 0; opacity: 0; pointer-events: none; background: linear-gradient(110deg, transparent 25%, #8ac8ff33 50%, transparent 75%); }

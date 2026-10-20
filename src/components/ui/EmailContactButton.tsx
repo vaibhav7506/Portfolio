@@ -1,36 +1,22 @@
 "use client"
 
-import { useEffect, useRef, useState, type MouseEvent } from "react"
+import { useState } from "react"
+import { useAnimatedNavigation } from "@/hooks/useAnimatedNavigation"
 import { MagneticButton } from "./MagneticButton"
 import styles from "./EmailContactButton.module.css"
 
 export function EmailContactButton() {
   const [launch, setLaunch] = useState(0)
-  const [opening, setOpening] = useState(false)
-  const resetTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  useEffect(() => () => {
-    if (resetTimer.current !== null) clearTimeout(resetTimer.current)
-  }, [])
-
-  const animateEmail = (event: MouseEvent<HTMLSpanElement>) => {
-    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
-    if (resetTimer.current !== null) clearTimeout(resetTimer.current)
-    setLaunch((current) => current + 1)
-    setOpening(true)
-    resetTimer.current = setTimeout(() => {
-      setOpening(false)
-      resetTimer.current = null
-    }, 1400)
-    // Leave the native link action intact, including its synchronous new-tab opening.
-  }
+  const { opening, activate } = useAnimatedNavigation(1300)
 
   return (
-    <span className={styles.wrapper} onClickCapture={animateEmail} data-opening={opening}>
+    <span className={styles.wrapper} data-opening={opening}>
       <MagneticButton
         href="https://mail.google.com/mail/?view=cm&to=vs7977722@gmail.com&subject=Opportunity%20via%20Portfolio&body=Hi%20Vaibhav%2C"
         target="_blank"
         rel="noopener noreferrer"
+        aria-busy={opening}
+        onClick={event => activate(event, () => setLaunch(current => current + 1))}
         strength={20}
         radius={90}
         className={`inline-flex items-center justify-center px-8 py-3.5 font-mono text-xs font-bold tracking-wider rounded-md bg-accent text-bg hover:bg-accent/90 hover:scale-[1.02] active:scale-[0.98] transition-all duration-150 ${styles.link}`}

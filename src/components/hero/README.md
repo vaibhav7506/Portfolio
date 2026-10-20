@@ -14,7 +14,9 @@ The pause control stops animation. The engine respects reduced motion, pauses of
 
 View projects rolls its label and arrow on desktop hover or keyboard focus. Résumé draws an underline and lifts its arrow diagonally. Selected Work links reveal individually as they enter the viewport and replay on return.
 
-`HeroTapLink.tsx` adds distinct touch feedback: a spring press for View projects, an arrow launch for Résumé, a ripple for RunbookOS, a sweep for CodeShift AI, and a rotating arrow for LoopOS. Feedback begins on pointer down, cancels during a swipe, and preserves native one-tap navigation. Reduced motion uses a brief color highlight. Mobile link targets are at least 44 pixels tall.
+`HeroTapLink.tsx` adds distinct touch feedback: a spring press for View projects, an arrow launch for Résumé, a ripple for RunbookOS, a sweep for CodeShift AI, and a rotating arrow for LoopOS. Project feedback begins on pointer down and cancels during a swipe. Résumé plays its launch on a confirmed click or tap, then opens the destination after the animation finishes. Reduced motion uses brief feedback. Mobile link targets are at least 44 pixels tall.
+
+`useAnimatedNavigation` also coordinates the contact email, footer résumé buttons, navigation résumé links and GitHub profile link. It waits for their finite CSS/Web Animations, guards repeated clicks and cancels pending navigation on unmount. Ctrl/Cmd/Shift/Alt clicks retain native browser behavior. If a delayed new tab is blocked, the destination opens in the current tab after the animation.
 
 ## Local verification
 

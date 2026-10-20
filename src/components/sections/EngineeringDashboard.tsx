@@ -1,7 +1,8 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import { ExternalLink, GitBranch, RefreshCw } from "lucide-react"
+import { ExternalLink, RefreshCw } from "lucide-react"
+import { GitHubProfileLink } from "@/components/ui/GitHubProfileLink"
 import { GITHUB_PROFILE_URL, GITHUB_REFRESH_MS, GITHUB_USERNAME, recentContributionWeeks, type GitHubActivity } from "@/lib/githubActivity"
 import styles from "./EngineeringDashboard.module.css"
 
@@ -76,7 +77,7 @@ export function EngineeringDashboard() {
           <h2 id="proof-title" className="text-2xl md:text-3xl font-extrabold text-text tracking-tight">Proof of Active Competence</h2>
           <p className={styles.description}>Actual public GitHub activity: recent commits, profile statistics, and the contribution calendar visible on my profile.</p>
         </div>
-        <a className={styles.profile} href={activity?.profile?.url ?? GITHUB_PROFILE_URL} target="_blank" rel="noopener noreferrer"><GitBranch size={15} aria-hidden="true" />@{activity?.profile?.login ?? GITHUB_USERNAME}<ExternalLink size={12} aria-hidden="true" /></a>
+        <GitHubProfileLink href={activity?.profile?.url ?? GITHUB_PROFILE_URL} username={activity?.profile?.login ?? GITHUB_USERNAME} />
       </div>
 
       {notices.length > 0 && <div className={styles.notice} role="status">{notices.join(" ")}</div>}

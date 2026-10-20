@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, type MouseEvent } from "react"
+import { useAnimatedNavigation } from "@/hooks/useAnimatedNavigation"
 import Link from "next/link"
 import { Menu, X } from "lucide-react"
 import { CommandPaletteTrigger } from "@/components/ui/CommandPalette"
@@ -25,6 +26,19 @@ export function Navbar() {
   const menuButtonRef = useRef<HTMLButtonElement>(null)
   const linksRef = useRef<HTMLDivElement>(null)
   const indicatorRef = useRef<HTMLSpanElement>(null)
+  const resumeNavigation = useAnimatedNavigation(550)
+
+  const activateResume = (event: MouseEvent<HTMLAnchorElement>) => {
+    const link = event.currentTarget
+    resumeNavigation.activate(event, () => {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
+      link.animate([
+        { boxShadow: "inset 0 -2px 0 transparent", color: "#94a3b8" },
+        { boxShadow: "inset 0 -2px 0 #7dd3fc", color: "#e0f2fe", offset: 0.45 },
+        { boxShadow: "inset 0 -2px 0 transparent", color: "#4da3ff" },
+      ], { duration: 550, easing: "ease-out" })
+    }, () => setMobileOpen(false))
+  }
 
   const showHover = (link: HTMLAnchorElement) => {
     const indicator = indicatorRef.current
@@ -127,6 +141,9 @@ export function Navbar() {
                 target="_blank"
                 rel="noopener noreferrer"
                 title={link.label === "Résumé" ? "View SDE résumé in Google Drive (opens in a new tab)" : undefined}
+                data-resume-nav={link.label === "Résumé" ? "desktop" : undefined}
+                aria-busy={link.label === "Résumé" ? resumeNavigation.opening : undefined}
+                onClick={link.label === "Résumé" ? activateResume : undefined}
                 data-nav-hover
                 onPointerEnter={(event) => { if (event.pointerType !== "touch") showHover(event.currentTarget) }}
                 onFocus={(event) => showHover(event.currentTarget)}
@@ -173,7 +190,7 @@ export function Navbar() {
             <div className={styles.mobilePrimary}>
               {links.filter((link) => ["Work", "Résumé", "Contact"].includes(link.label)).map((link) => (
                 link.external ? (
-                  <a key={link.label} href={link.href} target="_blank" rel="noopener noreferrer" title="View SDE résumé in Google Drive (opens in a new tab)" className={styles.mobileLink} onClick={() => setMobileOpen(false)}>
+                  <a key={link.label} href={link.href} target="_blank" rel="noopener noreferrer" title="View SDE résumé in Google Drive (opens in a new tab)" className={styles.mobileLink} data-resume-nav="mobile" aria-busy={resumeNavigation.opening} onClick={activateResume}>
                     <span>{link.label}</span><span aria-hidden="true">↗</span>
                   </a>
                 ) : (
