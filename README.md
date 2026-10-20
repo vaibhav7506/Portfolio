@@ -25,6 +25,7 @@ It presents projects through detailed case studies instead of simple screenshots
 ### What the experience includes
 
 - Interactive Mission Control-inspired interface
+- Particle portrait homepage hero with scroll-driven shapes, bounded scatter, and distinct mobile tap feedback
 - Keyboard-accessible command palette
 - Detailed project case-study routes
 - Project capabilities, source evidence, and public GitHub activity

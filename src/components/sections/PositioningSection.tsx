@@ -72,7 +72,8 @@ function PillarCard({ title, description, index }: PillarCardProps) {
   )
 }
 
-export function PositioningSection() {
+export function PositioningSection({ headingLevel = "h1" }: { headingLevel?: "h1" | "h2" }) {
+  const Heading = headingLevel
   const sectionRef = useRef<HTMLElement>(null)
   const headingRef = useRef<HTMLDivElement>(null)
   const pillarsRef = useRef<HTMLDivElement>(null)
@@ -133,9 +134,9 @@ export function PositioningSection() {
         <span className="font-mono text-xs font-bold text-accent tracking-widest uppercase">
           SPECIALIZATION
         </span>
-        <h1 id="specialization-heading" className="text-3xl md:text-5xl font-extrabold text-text tracking-tight leading-tight">
+        <Heading id="specialization-heading" className="text-3xl md:text-5xl font-extrabold text-text tracking-tight leading-tight">
           AI systems that don&apos;t just run — they recover.
-        </h1>
+        </Heading>
         <p className="text-sm text-text-2 font-sans leading-relaxed">
           I build infrastructure to inspect model outputs, record failures, and support bounded recovery paths.
         </p>
