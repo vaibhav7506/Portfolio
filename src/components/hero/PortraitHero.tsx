@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react"
 import { ArrowDown, ArrowUpRight, Pause, Play } from "lucide-react"
 import { resumeLinks } from "@/lib/resumeLinks"
 import type { ParticleScene } from "./particles/particle-scene"
+import { HeroTapLink } from "./HeroTapLink"
 import styles from "./PortraitHero.module.css"
 
 export function PortraitHero() {
@@ -93,20 +94,20 @@ export function PortraitHero() {
         <p className={styles.lead}>I build AI systems <br />with recovery built in.</p>
         <p className={styles.description}>From governed incident response to observable agent workflows — I turn complex ideas into full-stack applications you can inspect, test, and use.</p>
         <div className={styles.actions}>
-          <a className={styles.primary} href="#work">
+          <HeroTapLink effect="projects" className={styles.primary} href="#work">
             <span className={styles.projectLabel}><span>View projects</span><span aria-hidden="true">View projects</span></span>
             <span className={styles.projectArrow} aria-hidden="true"><ArrowDown size={16} /><ArrowDown size={16} /></span>
-          </a>
-          <a className={styles.secondary} href={resumeLinks.sde.url} target="_blank" rel="noopener noreferrer">
+          </HeroTapLink>
+          <HeroTapLink effect="resume" className={styles.secondary} href={resumeLinks.sde.url} target="_blank" rel="noopener noreferrer">
             <span className={styles.resumeLabel}>Résumé</span><ArrowUpRight className={styles.resumeArrow} size={16} aria-hidden="true" /><span className="sr-only"> (opens in a new tab)</span>
-          </a>
+          </HeroTapLink>
         </div>
         <div ref={selectedWorkRef} className={styles.selectedWork}>
           <span data-work-reveal="0">SELECTED WORK</span>
           <div>
-            <a data-work-reveal="1" href="/work/runbookos">RunbookOS <ArrowUpRight size={11} aria-hidden="true" /></a>
-            <a data-work-reveal="2" href="/work/codeshift-ai">CodeShift AI <ArrowUpRight size={11} aria-hidden="true" /></a>
-            <a data-work-reveal="3" href="/work/loopos">LoopOS <ArrowUpRight size={11} aria-hidden="true" /></a>
+            <HeroTapLink effect="runbook" data-work-reveal="1" href="/work/runbookos">RunbookOS <ArrowUpRight size={11} aria-hidden="true" /></HeroTapLink>
+            <HeroTapLink effect="code" data-work-reveal="2" href="/work/codeshift-ai">CodeShift AI <ArrowUpRight size={11} aria-hidden="true" /></HeroTapLink>
+            <HeroTapLink effect="loop" data-work-reveal="3" href="/work/loopos">LoopOS <ArrowUpRight size={11} aria-hidden="true" /></HeroTapLink>
           </div>
         </div>
       </div>
