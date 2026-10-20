@@ -9,10 +9,46 @@ import styles from "./PortraitHero.module.css"
 
 export function PortraitHero() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const selectedWorkRef = useRef<HTMLDivElement>(null)
   const sceneRef = useRef<ParticleScene | null>(null)
   const [ready, setReady] = useState(false)
   const [paused, setPaused] = useState(false)
   const [form, setForm] = useState({ name: "Portrait", index: 0 })
+
+  useEffect(() => {
+    const selectedWork = selectedWorkRef.current
+    if (!selectedWork) return
+    const motion = window.matchMedia("(prefers-reduced-motion: reduce)")
+    const animations = new Map<Element, Animation>()
+    const cancelAnimations = () => {
+      animations.forEach(animation => animation.cancel())
+      animations.clear()
+    }
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        animations.get(entry.target)?.cancel()
+        animations.delete(entry.target)
+        if (!entry.isIntersecting || motion.matches) return
+        const item = entry.target as HTMLElement
+        animations.set(item, item.animate([
+          { opacity: 0, transform: "translateY(14px)" },
+          { opacity: 1, transform: "translateY(0)" },
+        ], {
+          duration: 560,
+          delay: Number(item.dataset.workReveal) * 90,
+          easing: "cubic-bezier(.22, 1, .36, 1)",
+          fill: "backwards",
+        }))
+      })
+    }, { threshold: 0.6, rootMargin: "-82px 0px -24px 0px" })
+    selectedWork.querySelectorAll("[data-work-reveal]").forEach(item => observer.observe(item))
+    motion.addEventListener("change", cancelAnimations)
+    return () => {
+      observer.disconnect()
+      motion.removeEventListener("change", cancelAnimations)
+      cancelAnimations()
+    }
+  }, [])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -65,12 +101,12 @@ export function PortraitHero() {
             <span className={styles.resumeLabel}>Résumé</span><ArrowUpRight className={styles.resumeArrow} size={16} aria-hidden="true" /><span className="sr-only"> (opens in a new tab)</span>
           </a>
         </div>
-        <div className={styles.selectedWork}>
-          <span>SELECTED WORK</span>
+        <div ref={selectedWorkRef} className={styles.selectedWork}>
+          <span data-work-reveal="0">SELECTED WORK</span>
           <div>
-            <a href="/work/runbookos">RunbookOS <ArrowUpRight size={11} aria-hidden="true" /></a>
-            <a href="/work/codeshift-ai">CodeShift AI <ArrowUpRight size={11} aria-hidden="true" /></a>
-            <a href="/work/loopos">LoopOS <ArrowUpRight size={11} aria-hidden="true" /></a>
+            <a data-work-reveal="1" href="/work/runbookos">RunbookOS <ArrowUpRight size={11} aria-hidden="true" /></a>
+            <a data-work-reveal="2" href="/work/codeshift-ai">CodeShift AI <ArrowUpRight size={11} aria-hidden="true" /></a>
+            <a data-work-reveal="3" href="/work/loopos">LoopOS <ArrowUpRight size={11} aria-hidden="true" /></a>
           </div>
         </div>
       </div>
